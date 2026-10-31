@@ -22,7 +22,7 @@ const EXAMPLES = [
   "How do I ask for 22k without losing the offer?",
   "Make an image of a quiet lake at sunrise",
   "What did 0x7a3f…e91c do in the last 24 hours?",
-  "Plan a 3-day trip to Bali on a mid-range budget",
+  "Plan a 3-day trip to New York City on a mid-range budget",
 ];
 
 // Makers whose models Horman runs, shown as a quiet row under the hero.

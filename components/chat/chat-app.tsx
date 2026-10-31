@@ -24,7 +24,7 @@ const SUGGESTIONS = [
     prompt: "Draft a short, friendly reply to an investor asking for our Q3 numbers before the board meeting",
     Icon: PenLine,
   },
-  { title: "Plan something", prompt: "Plan a 3-day trip to Bali on a mid-range budget", Icon: MapIcon },
+  { title: "Plan something", prompt: "Plan a 3-day trip to New York City on a mid-range budget", Icon: MapIcon },
 ];
 
 const PETALS = ["petal-tl", "petal-tr", "petal-bl", "petal-br"];
