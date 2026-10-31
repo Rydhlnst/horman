@@ -1,7 +1,7 @@
 # $HORMAN launch video
 
 A 12-second Remotion video announcing $HORMAN on Solana, in Horman's colours and type.
-It never shows the CA; the outro points people to horman.dev and @askhorman for it.
+It never shows the CA; the outro points people to horman.dev and @hormandotdev for it.
 
 ```bash
 npm install

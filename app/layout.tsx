@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "Horman · Ask anything. Keep it private.",
     description: "Chat, create images, run agents and read the chain, all in one private AI workspace.",
   },
-  twitter: { card: "summary_large_image", site: "@askhorman" },
+  twitter: { card: "summary_large_image", site: "@hormandotdev" },
   title: {
     default: "Horman · Ask anything. Keep it private.",
     template: "%s · Horman",

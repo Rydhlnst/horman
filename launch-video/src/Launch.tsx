@@ -310,7 +310,7 @@ export function Launch() {
           horman.dev
         </div>
         <div style={{ fontFamily: F.body, fontSize: 32 * u, color: C.pale, ...fadeUp(frame, 322, 16, 12) }}>
-          Only trust the CA on horman.dev and @askhorman
+          Only trust the CA on horman.dev and @hormandotdev
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

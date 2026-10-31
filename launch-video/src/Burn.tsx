@@ -218,7 +218,7 @@ export function Burn() {
         >
           horman.dev
         </div>
-        <div style={{ fontFamily: F.body, fontSize: 32 * u, color: C.pale, ...fadeUp(frame, 270, 16, 12) }}>Only trust the CA on horman.dev and @askhorman</div>
+        <div style={{ fontFamily: F.body, fontSize: 32 * u, color: C.pale, ...fadeUp(frame, 270, 16, 12) }}>Only trust the CA on horman.dev and @hormandotdev</div>
       </AbsoluteFill>
     </AbsoluteFill>
   );

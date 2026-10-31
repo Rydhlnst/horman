@@ -41,7 +41,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
 ];
 
 const SOCIAL = [
-  { href: "https://x.com/askhorman", label: "Horman on X", Icon: SiX },
+  { href: "https://x.com/hormandotdev", label: "Horman on X", Icon: SiX },
   { href: "https://github.com", label: "GitHub", Icon: SiGithub },
 ];
 
