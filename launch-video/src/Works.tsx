@@ -23,7 +23,7 @@ const CHAPTERS = [
 ];
 export const WORKS_FRAMES = 1080;
 
-function Grid({ frame }: { frame: number }) {
+export function Grid({ frame }: { frame: number }) {
   const shift = (frame * 0.4) % 60;
   return (
     <AbsoluteFill
