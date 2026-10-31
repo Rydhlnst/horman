@@ -21,14 +21,14 @@ export const MODES: Mode[] = [
   {
     key: "sealed",
     label: "Sealed",
-    short: "End-to-end, attested enclave",
-    hero: "Your chat is encrypted on your device and opened only inside a verified enclave. The answer comes back to you alone.",
-    desc: "Your prompt and files are encrypted on your device to an attested enclave, and only you can decrypt the answer. Horman runs the hardware but cannot read what passes through it.",
+    short: "Private providers now, enclave next",
+    hero: "Answered by open-weight models through providers that don’t keep or train on your data. Horman stores nothing. Sealed enclaves are next.",
+    desc: "Today: open-weight models through providers that don’t keep or train on your data, and Horman stores nothing. Next: your prompt encrypted on your device to an attested enclave, so not even Horman can read it.",
     fit: "Best for contracts, financials, strategies and anything sensitive.",
     rows: [
       ["You", "yes", "yes", "—"],
-      ["Horman", "no", "no", "none"],
-      ["Model provider", "no", "no", "none"],
+      ["Horman", "yes", "yes", "none"],
+      ["Model provider", "yes", "yes", "none"],
     ],
   },
   {
@@ -53,7 +53,7 @@ export const MODES: Mode[] = [
     fit: "Best for public information and casual questions.",
     rows: [
       ["You", "yes", "yes", "—"],
-      ["Horman", "yes", "yes", "30 days"],
+      ["Horman", "yes", "yes", "none"],
       ["Model provider", "yes", "yes", "per provider"],
     ],
   },

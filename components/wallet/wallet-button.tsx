@@ -94,7 +94,7 @@ function WalletStatus() {
           <span className="text-muted">{TICKER} launches soon. Holder access switches on with the token.</span>
         ) : session.holder ? (
           <span className="flex items-center gap-1.5 font-semibold text-[#0f8f6b]">
-            <Check size={15} /> Holder · {amount} {TICKER}
+            <Check size={15} /> {amount === null ? `${TICKER} holder` : `Holder · ${amount} ${TICKER}`}
           </span>
         ) : (
           <span className="text-muted">

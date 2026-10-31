@@ -7,6 +7,7 @@ import sans400 from "@fontsource/instrument-sans/files/instrument-sans-latin-400
 import sans500 from "@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2";
 import sans600 from "@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2";
 import brico700 from "@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-700-normal.woff2";
+import mono400 from "@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2";
 
 // The site's own type: Inter Tight headlines, Instrument Serif italic accents,
 // Instrument Sans body and Bricolage for the wordmark.
@@ -19,6 +20,7 @@ const faces: [string, string, string, string][] = [
   ["Instrument Sans", sans500, "500", "normal"],
   ["Instrument Sans", sans600, "600", "normal"],
   ["Bricolage Grotesque", brico700, "700", "normal"],
+  ["IBM Plex Mono", mono400, "400", "normal"],
 ];
 
 const handle = delayRender("Loading fonts");
