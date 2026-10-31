@@ -79,7 +79,7 @@ export const DEV_MENU: NavItem[] = [
 
 export const TOPUP_MIN = 1;
 export const TOPUP_MAX = 200;
-export const TOPUP_PRESETS = [5, 10, 25];
+export const TOPUP_PRESETS = [1, 5, 10, 25];
 /** Stablecoins accepted for top-ups. */
 export const TOPUP_TOKENS = ["USDC", "USDT", "USDG"] as const;
 export type TopupToken = (typeof TOPUP_TOKENS)[number];

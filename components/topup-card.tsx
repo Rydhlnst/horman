@@ -126,7 +126,7 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
           <dt className="text-night-muted" id={labelId}>
             Amount
           </dt>
-          <dd className="grid grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.6fr)] gap-2 max-[480px]:grid-cols-3" role="group" aria-labelledby={labelId}>
+          <dd className="grid grid-cols-[repeat(4,minmax(0,1fr))_minmax(0,1.6fr)] gap-2 max-[480px]:grid-cols-4" role="group" aria-labelledby={labelId}>
             {TOPUP_PRESETS.map((n) => {
               const on = preset === n;
               return (
@@ -141,7 +141,7 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
                 </button>
               );
             })}
-            <label className="flex h-12 items-center gap-1.5 rounded-[14px] border border-white/15 px-3.5 text-sm focus-within:border-pale max-[480px]:col-span-3">
+            <label className="flex h-12 items-center gap-1.5 rounded-[14px] border border-white/15 px-3.5 text-sm focus-within:border-pale max-[480px]:col-span-4">
               <span className="text-night-muted">$</span>
               <span className="sr-only">Custom amount</span>
               <input
