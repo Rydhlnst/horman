@@ -25,8 +25,8 @@ export const metadata: Metadata = {
 const READS = [
   { Icon: PiWalletDuotone, title: "Wallets", text: "Who a wallet is, what it holds, who it trades with, and the wallets that move with it." },
   { Icon: PiCoinDuotone, title: "Tokens", text: "Holders, how concentrated they are, mint and freeze authority, LP burns, and what the dev wallet did." },
-  { Icon: PiFileCodeDuotone, title: "Programs", text: "What each instruction does, in plain words, and which authorities the deployer kept." },
-  { Icon: PiArrowsLeftRightDuotone, title: "Transactions", text: "Paste a hash and get the story: who paid whom, through what, and why it matters." },
+  { Icon: PiFileCodeDuotone, title: "Programs", text: "What each instruction does, in plain words, and which authorities the dev kept." },
+  { Icon: PiArrowsLeftRightDuotone, title: "Transactions", text: "Paste a transaction signature and get the story: who paid whom, through which program, and why it matters." },
   { Icon: PiRocketLaunchDuotone, title: "Launches", text: "New mints checked as they appear, pump.fun included: authorities, holders, liquidity, risk score." },
   { Icon: PiBellRingingDuotone, title: "Alerts", text: "Hand a wallet or token to an agent and hear the moment something moves." },
 ];
