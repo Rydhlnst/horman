@@ -1,0 +1,289 @@
+@import "tailwindcss";
+
+/* Horman: a white page with soft grey-green panels, ink that leans green, one
+   sage accent and a cream receipt paper. Inter Tight for headlines with an
+   Instrument Serif italic accent, Instrument Sans for text, IBM Plex Mono for
+   labels; Bricolage Grotesque only in the wordmark. */
+:root {
+  color-scheme: light;
+  --bg: #fff;
+  --panel: #f3f5f3;
+  --ink: #0e1210;
+  --surface: #fff;
+  --raise: #e9edea;
+  --line: #e0e5e1;
+  --line-strong: #ccd3ce;
+  --fg: #161a17;
+  --muted: #4d5550;
+  --faint: #626b65;
+  --accent: #4e6b5c;
+  --accent-soft: rgba(78, 107, 92, 0.08);
+  --accent-ink: #fff;
+  --ok: #17804f;
+  --warn: #9a6200;
+  --bad: #c2352b;
+  --code-bg: #141a16;
+  --code-fg: #dce3de;
+  /* Family tones: one dark night green, a mist, a pale sage and the sage accent. */
+  --night: #1a231e;
+  --night-2: #25312a;
+  --night-line: rgb(255 255 255 / 0.1);
+  --night-muted: #a9c0b1;
+  --mist: #dde6df;
+  --pale: #c9d7cd;
+  /* Receipt paper, the one warm tone. */
+  --cream: #ede5d3;
+  --cream-line: #d3c8b0;
+  --petal: 26px;
+  --tight: 7px;
+  /* Depth, after Watermelon UI: thin and layered, never a glow. */
+  --tactile: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -2px 3px rgb(22 26 23 / 0.05), 0 1px 2px rgb(22 26 23 / 0.06),
+    0 4px 12px rgb(22 26 23 / 0.04);
+  --tactile-ink: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 1px 2px rgb(0 0 0 / 0.2), 0 6px 16px rgb(26 35 30 / 0.18);
+  --lift: 0 0 0 1px rgb(22 26 23 / 0.05), 0 1px 2px rgb(22 26 23 / 0.05), 0 12px 32px -10px rgb(22 26 23 / 0.14);
+  --well: inset 0 0 6px rgb(22 26 23 / 0.08);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-raise: var(--raise);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-code-bg: var(--code-bg);
+  --color-code-fg: var(--code-fg);
+  --color-night: var(--night);
+  --color-night-2: var(--night-2);
+  --color-night-muted: var(--night-muted);
+  --color-mist: var(--mist);
+  --color-pale: var(--pale);
+  --color-cream: var(--cream);
+  --color-cream-line: var(--cream-line);
+
+  --font-sans: var(--font-body), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: var(--font-tight), "Helvetica Neue", Arial, sans-serif;
+
+  --radius-card: 14px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-soft: 0 6px 24px rgba(22, 26, 23, 0.05);
+  --shadow-lift: 0 20px 50px rgba(22, 26, 23, 0.08);
+
+  --animate-blink: blink 1s steps(1) infinite;
+  --animate-flash: flash 0.6s ease;
+
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  @keyframes flash {
+    0% {
+      background-color: var(--accent-soft);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before {
+    border-color: var(--line);
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Scrollbarless: everything still scrolls by wheel, touch and keys, the bars just aren't drawn. */
+  * {
+    scrollbar-width: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Paint the notch area on phones so content never shows through it. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0);
+    z-index: 10;
+    background: var(--bg);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  [id] {
+    scroll-margin-top: 100px;
+  }
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    ::after,
+    ::before {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+@utility btn {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(to bottom, #fff, #eef1ee);
+  box-shadow: var(--tactile);
+  padding-inline: 22px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  text-decoration: none;
+  transition-property: color, background, border-color, box-shadow, filter, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    border-color: #b9c2bc;
+    filter: brightness(1.02);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+@utility btn-primary {
+  border-color: var(--accent);
+  background-color: var(--accent);
+  color: var(--accent-ink);
+  &:hover {
+    border-color: var(--accent);
+    filter: brightness(1.1);
+  }
+}
+
+@utility btn-ink {
+  border-color: #111813;
+  background: linear-gradient(to bottom, #33433a, #19221d);
+  box-shadow: var(--tactile-ink);
+  color: #fff;
+  &:hover {
+    border-color: #111813;
+    filter: brightness(1.12);
+  }
+}
+
+@utility btn-sm {
+  min-height: 40px;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@utility card {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background-color: var(--surface);
+}
+
+@utility pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  border-radius: 9999px;
+  border: 1px solid var(--line-strong);
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1rem;
+  color: var(--muted);
+}
+
+@utility pill-accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@utility eyebrow {
+  font-family: var(--font-code), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+}
+
+@utility h2 {
+  font-family: var(--font-bricolage), "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(30px, 4.4vw, 48px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+@utility lede {
+  max-width: 62ch;
+  font-size: 17px;
+  line-height: 1.625;
+  color: var(--muted);
+}
+
+@utility input {
+  min-height: 50px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background-color: var(--bg);
+  padding: 0.75rem 0.875rem;
+  font-size: 15px;
+  color: var(--fg);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  &:focus {
+    border-color: var(--accent);
+  }
+}
