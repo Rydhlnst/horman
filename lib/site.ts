@@ -87,6 +87,8 @@ export type TopupToken = (typeof TOPUP_TOKENS)[number];
 /** What unlocks every model: holding $HORMAN. The amount is still a placeholder. */
 export const TICKER = "$HORMAN";
 export const HOLD = `[N] ${TICKER}`;
+/** The $HORMAN a wallet needs for every model. null until the amount is set: then any balance counts. */
+export const HOLD_MIN: number | null = null;
 
 /** Free access (no token held) gets the free tier only, which is Auto. Holders can pick any model. */
 export const FREE_LIMIT = "[N] chats a day";

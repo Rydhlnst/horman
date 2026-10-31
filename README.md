@@ -52,10 +52,28 @@ node scripts/render.mjs AgentsTutorial   # just one
 On the site, `components/product-video.tsx` plays a video muted while it is on screen, with a
 pause button that always works.
 
+## Wallet sign-in (Solana)
+
+`Connect wallet` sits in the top bar, the phone menu and the chat header. It lists every
+Solana wallet the browser has (Phantom, Solflare, Backpack and anything on the Wallet
+Standard; the Mobile Wallet Adapter on Android) and, on a phone without one, links to open
+the site inside Phantom or Solflare. After connecting, the wallet signs one message
+("Sign in with Solana": no transaction, no fee). The server checks it and sets a signed
+session cookie.
+
+- `components/wallet/` – the provider, session context and the button with its picker.
+- `app/api/auth/` – `nonce`, `verify`, `session` and `logout`.
+- `lib/auth.ts` – signature check, the session cookie and the `$HORMAN` balance read over
+  `SOLANA_RPC_URL`. `lib/siws.ts` is the signed message, shared by browser and server.
+- Holder access: a signed-in wallet with a `$HORMAN` balance (at least `HOLD_MIN` in
+  `lib/site.ts` once that is set) can pick every model. Before `NEXT_PUBLIC_CA` is set
+  nobody is a holder.
+- Needs `SESSION_SECRET`; see `.env.example`.
+
 ## Still a preview
 
 - Chat answers and images are samples; no model is wired in yet.
-- Wallet payment, the early-access form and the API/SDK packages do not exist yet. Nothing is sent anywhere.
+- Wallet payment, the early-access form and the API/SDK packages do not exist yet. Wallet sign-in works; nothing else is sent anywhere.
 - Copy still has placeholders: `[MODEL LIST]`, `[N]` and `[PRICE]`.
 
 ## Logos and borrowed UI

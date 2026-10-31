@@ -22,6 +22,7 @@ import {
 import { CaButton } from "@/components/ca-button";
 import { CommandPalette } from "@/components/command-palette";
 import { Wordmark } from "@/components/logo";
+import { WalletButton } from "@/components/wallet/wallet-button";
 import type { IconLike } from "@/lib/icons";
 
 const CHIPS: { label: string; href: string; Icon: IconLike }[] = [
@@ -139,6 +140,7 @@ export function SiteHeader() {
               <Search size={18} />
             </button>
             <CaButton className="max-[1180px]:hidden" />
+            <WalletButton className="max-[860px]:hidden" />
             <Link href="/chat" className="topbar-cta max-[560px]:hidden">
               Start chatting
             </Link>
@@ -233,6 +235,7 @@ export function SiteHeader() {
 
               <div className="topbar-mobile-cta flex flex-col items-stretch gap-2.5">
                 <CaButton className="justify-center" />
+                <WalletButton block />
                 <Link href="/chat" className="topbar-cta w-full justify-center" onClick={close}>
                   Start chatting
                 </Link>

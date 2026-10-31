@@ -10,7 +10,9 @@ import { TopupSteps, TopupVoucher } from "@/components/topup-card";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { HANDOFF, STORE, reducedMotion, uid, type Chat, type Message } from "@/lib/chat";
-import { HOLD, MODEL_GROUPS, MODES } from "@/lib/site";
+import { HOLD, MODEL_GROUPS, MODES, TICKER } from "@/lib/site";
+import { WalletButton } from "@/components/wallet/wallet-button";
+import { useWalletSession } from "@/components/wallet/wallet-session";
 
 // The chat models, free tier first. Anything but Auto needs the token.
 const CHAT_MODELS = MODEL_GROUPS.find((g) => g.id === "chat")!.models;
@@ -79,8 +81,9 @@ export function ChatApp() {
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const mode = MODES[modeIndex];
-  // The preview has no wallet, so nobody holds the token yet: a holders-only model can't send.
-  const locked = tool === "chat" && !CHAT_MODELS.find((m) => m.name === tier)?.free;
+  // Holders-only models need a signed-in wallet that holds the token.
+  const { session } = useWalletSession();
+  const locked = tool === "chat" && !CHAT_MODELS.find((m) => m.name === tier)?.free && !session?.holder;
   const active = chats.find((c) => c.id === activeId) ?? null;
   const messages = useMemo(() => active?.messages ?? [], [active]);
 
@@ -322,7 +325,10 @@ export function ChatApp() {
               items={MODES.map((m) => ({ id: m.key, label: m.label }))}
             />
           </div>
-          <span className="pill pill-accent max-[480px]:hidden">preview</span>
+          <div className="flex items-center gap-2">
+            <span className="pill pill-accent max-[640px]:hidden">preview</span>
+            <WalletButton />
+          </div>
         </div>
         <div className="bg-mist py-2 pl-[max(16px,env(safe-area-inset-left,0px))] pr-[max(16px,env(safe-area-inset-right,0px))] text-[13px] text-fg/75">
           Website preview: replies and images are samples. The live site answers with real AI.
@@ -479,7 +485,11 @@ export function ChatApp() {
           </form>
           {locked && (
             <p className="mx-auto mt-2 flex max-w-[780px] flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] text-muted" role="status">
-              {tier} is for holders: hold {HOLD} in your wallet to pick it.
+              {!session?.address
+                ? `${tier} is for holders: connect a wallet that holds ${HOLD} to pick it.`
+                : !session.ca
+                  ? `${tier} opens to holders when ${TICKER} launches.`
+                  : `${tier} is for holders: this wallet needs ${HOLD}.`}
               <button type="button" className="font-semibold text-accent underline underline-offset-2" onClick={() => setTier("Auto")}>
                 Use Auto, free
               </button>

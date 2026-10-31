@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Mono, Instrument_Sans, Instrument_Serif, Inter_Tight } from "next/font/google";
 import { MotionProvider } from "@/components/motion-provider";
+import { WalletSessionProvider } from "@/components/wallet/wallet-session";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 import "./ui.css";
@@ -39,7 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${body.variable} ${code.variable} ${bricolage.variable} ${tight.variable} ${serif.variable}`}>
       <body className="font-sans text-base leading-relaxed">
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          <WalletSessionProvider>{children}</WalletSessionProvider>
+        </MotionProvider>
       </body>
     </html>
   );
