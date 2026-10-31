@@ -36,7 +36,7 @@ export function WalletButton({ className = "", block = false }: Props) {
       <div ref={box} className={`relative ${block ? "w-full" : ""} ${className}`}>
         <button
           type="button"
-          className={`${base} relative border-line bg-surface text-fg hover:border-fg/30`}
+          className={`${base} relative border-line-strong bg-surface text-fg hover:bg-panel`}
           onClick={() => setMenu((m) => !m)}
           aria-expanded={menu}
           aria-label={`Wallet ${shortAddress(session.address)}`}
@@ -68,7 +68,7 @@ export function WalletButton({ className = "", block = false }: Props) {
     <>
       <button
         type="button"
-        className={`${base} border-fg bg-surface text-fg hover:bg-mist ${className}`}
+        className={`${base} border-line-strong bg-surface text-fg hover:bg-panel ${className}`}
         onClick={() => setPicker(true)}
         disabled={working}
         aria-label="Connect wallet"

@@ -24,6 +24,8 @@ import { CommandPalette } from "@/components/command-palette";
 import { Wordmark } from "@/components/logo";
 import { WalletButton } from "@/components/wallet/wallet-button";
 import type { IconLike } from "@/lib/icons";
+import { X_URL } from "@/lib/site";
+import { SiX } from "react-icons/si";
 
 const CHIPS: { label: string; href: string; Icon: IconLike }[] = [
   { label: "Chat", href: "/chat", Icon: PiChatTeardropTextDuotone },
@@ -139,6 +141,10 @@ export function SiteHeader() {
             <button type="button" className="topbar-icon" onClick={() => setSearch(true)} aria-label="Search (Ctrl K)" title="Search (Ctrl K)">
               <Search size={18} />
             </button>
+            <a href={X_URL} target="_blank" rel="noreferrer" className="topbar-icon" aria-label="Horman on X" title="Horman on X">
+              <SiX size={15} />
+            </a>
+            <span className="topbar-sep max-[560px]:hidden" aria-hidden="true" />
             <CaButton className="max-[1180px]:hidden" />
             <WalletButton className="max-[860px]:hidden" />
             <Link href="/chat" className="topbar-cta max-[560px]:hidden">

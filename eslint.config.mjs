@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The Remotion project has its own package and config.
     "video/**",
+    "launch-video/**",
   ]),
 ]);
 

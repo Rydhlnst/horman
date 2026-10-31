@@ -65,13 +65,8 @@ export function HowTo() {
   const { width, height } = useVideoConfig();
   const u = Math.min(width / 1920, height / 1080);
 
-  let at = INTRO;
-  const starts = STEPS.map((s) => {
-    const start = at;
-    at += s.frames;
-    return start;
-  });
-  const outroStart = at;
+  const starts = STEPS.map((_, i) => INTRO + STEPS.slice(0, i).reduce((n, s) => n + s.frames, 0));
+  const outroStart = HOWTO_FRAMES - OUTRO;
   const current = Math.max(0, starts.findIndex((s, i) => frame >= s && frame < s + STEPS[i].frames));
 
   const introOp = interpolate(frame, [INTRO - FADE, INTRO], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });

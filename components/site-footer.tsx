@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { PiLockKeyDuotone } from "react-icons/pi";
 import { SiGithub, SiX } from "react-icons/si";
+import { X_URL } from "@/lib/site";
 import { CaButton } from "@/components/ca-button";
 import { Wordmark } from "@/components/logo";
 import { Reveal } from "@/components/motion/reveal";
@@ -41,7 +42,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
 ];
 
 const SOCIAL = [
-  { href: "https://x.com/hormandotdev", label: "Horman on X", Icon: SiX },
+  { href: X_URL, label: "Horman on X", Icon: SiX },
   { href: "https://github.com", label: "GitHub", Icon: SiGithub },
 ];
 

@@ -743,8 +743,16 @@
   .topbar-end {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-left: auto;
+  }
+
+  /* A hairline between the icon buttons and the action buttons. */
+  .topbar-sep {
+    width: 1px;
+    height: 22px;
+    margin: 0 4px;
+    background: var(--line-strong);
   }
 
   @media (max-width: 1000px) {
@@ -763,7 +771,7 @@
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: 12px;
+    border-radius: 999px;
     color: var(--muted);
     transition: background 0.15s, color 0.15s;
   }
@@ -778,8 +786,8 @@
     display: inline-flex;
     align-items: center;
     height: 40px;
-    padding: 0 16px;
-    border-radius: 13px;
+    padding: 0 18px;
+    border-radius: 999px;
     background: var(--ink);
     font-size: 14px;
     font-weight: 600;

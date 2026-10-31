@@ -86,6 +86,8 @@ export type TopupToken = (typeof TOPUP_TOKENS)[number];
 
 /** What unlocks every model: holding $HORMAN. The amount is still a placeholder. */
 export const TICKER = "$HORMAN";
+/** Horman on X. */
+export const X_URL = "https://x.com/hormandotdev";
 /** The $HORMAN mint (CA) on Solana. NEXT_PUBLIC_CA overrides it. */
 export const CA_ADDRESS = "6W4SEuy1DEHbPKrRJNHyoAHYJ63M3JQadgAhHUv8pump";
 export const HOLD = `[N] ${TICKER}`;
