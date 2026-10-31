@@ -4,7 +4,7 @@ import { SiSolana } from "react-icons/si";
 import { AbsoluteFill, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 
 // Horman's palette (app/globals.css).
-const C = {
+export const C = {
   fg: "#161a17",
   muted: "#4d5550",
   line: "#e0e5e1",
@@ -15,25 +15,25 @@ const C = {
   mist: "#dde6df",
   accent: "#4e6b5c",
 };
-const SOL = "linear-gradient(135deg, #9945FF, #14F195)";
-const F = {
+export const SOL = "linear-gradient(135deg, #9945FF, #14F195)";
+export const F = {
   display: "'Inter Tight', sans-serif",
   serif: "'Instrument Serif', serif",
   body: "'Instrument Sans', sans-serif",
   mark: "'Bricolage Grotesque', sans-serif",
 };
 
-const ease = Easing.bezier(0.22, 0.8, 0.24, 1);
-const fadeUp = (frame: number, start: number, dur = 18, dist = 28) => ({
+export const ease = Easing.bezier(0.22, 0.8, 0.24, 1);
+export const fadeUp = (frame: number, start: number, dur = 18, dist = 28) => ({
   opacity: interpolate(frame, [start, start + dur], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }),
   transform: `translateY(${interpolate(frame, [start, start + dur], [dist, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ease })}px)`,
 });
 /** Opacity of a scene that fades in at `a`, holds, and fades out by `d`. */
-const window4 = (frame: number, a: number, b: number, c: number, d: number) =>
+export const window4 = (frame: number, a: number, b: number, c: number, d: number) =>
   interpolate(frame, [a, b, c, d], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
 /** The Horman mark: four sage petals on a dark green tile. */
-function Mark({ size }: { size: number }) {
+export function Mark({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64">
       <defs>
@@ -68,7 +68,7 @@ function Mark({ size }: { size: number }) {
 }
 
 /** Soft sage hills along the bottom, like the product videos. */
-function Hills({ frame }: { frame: number }) {
+export function Hills({ frame }: { frame: number }) {
   const drift = Math.sin(frame / 60) * 14;
   return (
     <svg viewBox="0 0 1920 420" preserveAspectRatio="none" style={{ position: "absolute", left: 0, right: 0, bottom: 0, width: "100%", height: "36%" }}>
@@ -150,7 +150,7 @@ function Card({ icon, title, text, u, style, row = false }: { icon: ReactNode; t
   );
 }
 
-function Caption({ n, text, u, frame, start }: { n: number; text: string; u: number; frame: number; start: number }) {
+export function Caption({ n, text, u, frame, start }: { n: number; text: string; u: number; frame: number; start: number }) {
   return (
     <div style={{ position: "absolute", left: 0, right: 0, bottom: 64 * u, display: "flex", justifyContent: "center", ...fadeUp(frame, start, 14, 16) }}>
       <div
