@@ -4,7 +4,6 @@ import { ArrowUpRight, LockKeyhole, MessageSquare, Ticket, Wallet } from "lucide
 import Link from "next/link";
 import { useId, useState } from "react";
 import { SiSolana } from "react-icons/si";
-import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { TOPUP_MAX, TOPUP_MIN, TOPUP_PRESETS, TOPUP_TOKENS, type TopupToken } from "@/lib/site";
 
 const STEPS = [
@@ -16,7 +15,7 @@ const STEPS = [
   {
     Icon: Wallet,
     title: "Pay from your wallet",
-    text: "Send USDC, USDT or USDG on Solana from Phantom, Solflare or Backpack. No card, no billing address.",
+    text: "Send USDC on Solana from Phantom, Solflare or Backpack. No card, no billing address.",
   },
   {
     Icon: Ticket,
@@ -54,7 +53,7 @@ export function TopupSteps({ compact = false }: { compact?: boolean }) {
  */
 export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupToken) => void }) {
   const labelId = useId();
-  const [token, setToken] = useState<TopupToken>("USDC");
+  const token: TopupToken = TOPUP_TOKENS[0];
   const [amount, setAmount] = useState(10);
   const [preset, setPreset] = useState<number | null>(10);
   const [custom, setCustom] = useState("");
@@ -110,16 +109,11 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
         </div>
         <div className="flex items-center justify-between gap-4">
           <dt className="text-night-muted">Token</dt>
-          <dd>
-            <SlidingTabs
-              kind="radio"
-              tone="dark"
-              size="sm"
-              label="Token"
-              value={token}
-              onChange={(id) => setToken(id as TopupToken)}
-              items={TOPUP_TOKENS.map((t) => ({ id: t, label: t }))}
-            />
+          <dd className="flex items-center gap-2.5 font-medium">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2775CA] text-[13px] font-bold text-white" aria-hidden="true">
+              $
+            </span>
+            {token}
           </dd>
         </div>
         <div className="flex flex-col gap-3">

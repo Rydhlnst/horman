@@ -22,7 +22,7 @@ const FREE = ["Auto, which answers with a light open model", FREE_LIMIT, "[N] im
 const HOLDER = [
   `Hold ${HOLD} in your wallet to unlock every model`,
   "Pick any model, in every mode it runs in",
-  "Pay per use with credit: top-ups of $1 to $200 in USDC, USDT or USDG on Solana",
+  "Pay per use with credit: top-ups of $1 to $200 in USDC on Solana",
   "Paid with private vouchers that never link to your chats",
 ];
 

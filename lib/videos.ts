@@ -49,7 +49,7 @@ export const VIDEOS: ProductVideo[] = [
     tab: "Top up",
     kind: "Tutorial",
     title: "Top up credit privately",
-    text: "Pay in USDC, USDT or USDG on Solana and watch it land as private vouchers that never point back to your chats.",
+    text: "Pay in USDC on Solana and watch it land as private vouchers that never point back to your chats.",
     length: "0:17",
   },
 ];

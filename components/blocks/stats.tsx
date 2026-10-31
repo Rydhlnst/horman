@@ -27,7 +27,7 @@ const STATS: { label: string; metric: string; sub: string; text: string }[] = [
   {
     label: "Minimum top-up",
     metric: "$1",
-    sub: "USDC, USDT or USDG",
+    sub: "USDC on Solana",
     text: "On Solana, settled in seconds for under a cent, then turned into private vouchers that never point back to your chats.",
   },
 ];

@@ -36,7 +36,7 @@ const PAGES: Entry[] = [
   { group: "Pages", label: "Models", hint: "Every model and the modes it runs in", href: "/#models", Icon: PiCpuDuotone },
   { group: "Pages", label: "Privacy modes", hint: "Sealed, Ephemeral and Open", href: "/#modes", Icon: PiLockKeyDuotone },
   { group: "Pages", label: "Pricing", hint: "Free tier and holders", href: "/pricing", Icon: PiTagDuotone },
-  { group: "Pages", label: "Top up credit", hint: "USDC, USDT or USDG on Solana", href: "/topup", Icon: PiWalletDuotone },
+  { group: "Pages", label: "Top up credit", hint: "USDC on Solana", href: "/topup", Icon: PiWalletDuotone },
   { group: "Pages", label: "Developers", hint: "API, SDKs and MCP tools", href: "/developers", Icon: PiBookOpenDuotone },
   { group: "Pages", label: "Early access", hint: "Join wave 1", href: "/access", Icon: PiSparkleDuotone },
 ];

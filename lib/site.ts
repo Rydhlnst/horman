@@ -80,12 +80,13 @@ export const DEV_MENU: NavItem[] = [
 export const TOPUP_MIN = 1;
 export const TOPUP_MAX = 200;
 export const TOPUP_PRESETS = [1, 5, 10, 25];
-/** Stablecoins accepted for top-ups, all on Solana. */
-export const TOPUP_TOKENS = ["USDC", "USDT", "USDG"] as const;
+/** Top-ups are paid in USDC on Solana. */
+export const TOPUP_TOKENS = ["USDC"] as const;
 export type TopupToken = (typeof TOPUP_TOKENS)[number];
 
-/** What unlocks every model. The token isn't announced yet, so both parts are placeholders. */
-export const HOLD = "[N] $[TICKER]";
+/** What unlocks every model: holding $HORMAN. The amount is still a placeholder. */
+export const TICKER = "$HORMAN";
+export const HOLD = `[N] ${TICKER}`;
 
 /** Free access (no token held) gets the free tier only, which is Auto. Holders can pick any model. */
 export const FREE_LIMIT = "[N] chats a day";
