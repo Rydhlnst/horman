@@ -2,14 +2,12 @@ import { Fragment, useId, useMemo, type ReactNode } from "react";
 import { AGENTS } from "@/lib/agents";
 import { LOOKUPS } from "@/lib/onchain";
 
-/** Asks that should make an image even when the Chat tool is on (English and Indonesian). */
+/** Asks that should make an image even when the Chat tool is on. */
 export const IMAGE_INTENT =
-  /^(please\s+)?(create|make|draw|generate|paint|design)\s+(me\s+)?(an?\s+)?(image|picture|photo|illustration|drawing|poster|logo|wallpaper)|^(tolong\s+)?(buat(kan|in)?|bikin(kan|in)?|gambar(kan|in)?|lukis(kan)?)\s+(sebuah\s+|satu\s+)?(gambar|foto|ilustrasi|poster|logo|wallpaper)|^gambarkan\b/i;
-
-const INDONESIAN = /\b(apa|bagaimana|gimana|kenapa|tolong|buat|saya|aku|gw|yang|dan|ini)\b/i;
+  /^(please\s+)?(create|make|draw|generate|paint|design)\s+(me\s+)?(an?\s+)?(image|picture|photo|illustration|drawing|poster|logo|wallpaper)/i;
 
 const ONCHAIN = /0x[0-9a-f]|\b(wallet|token|contract|onchain|on-chain|holders?|liquidity|tx|transaction)\b/i;
-const AGENT = /\b(agent|every (day|week|monday|morning)|watch|alert|brief me|remind|monitor|pantau|setiap)\b/i;
+const AGENT = /\b(agent|every (day|week|monday|morning)|watch|alert|brief me|remind|monitor)\b/i;
 
 const LEVEL_WORD = { ok: "fine", warn: "worth a look", bad: "risky" } as const;
 
@@ -30,14 +28,12 @@ function agentReply(question: string) {
   return `**Agent ready: ${a.name}** (sample)\n\nRuns: **${a.trigger.text}**\n${steps}\n\nResults land in your Horman inbox, sealed to you. Live agents open with wave 1.`;
 }
 
-/** The preview's stand-in answer, in the language the question was asked in. */
+/** The preview's stand-in answer. */
 export function sampleReply(question: string) {
   const asked = question.slice(0, 160);
   if (AGENT.test(question)) return agentReply(question);
   if (ONCHAIN.test(question)) return onchainReply(question);
-  return INDONESIAN.test(question)
-    ? `**Ini preview website.** Di versi asli, pertanyaan kamu dijawab langsung oleh model AI.\n\nPertanyaan kamu tadi: “${asked}”`
-    : `**This is a website preview.** On the live site, a real AI model answers here.\n\nYou asked: “${asked}”`;
+  return `**This is a website preview.** On the live site, a real AI model answers here.\n\nYou asked: “${asked}”`;
 }
 
 function inline(text: string): ReactNode[] {
