@@ -41,7 +41,7 @@ export const VIDEOS: ProductVideo[] = [
     tab: "Onchain",
     kind: "How it works",
     title: "Ask the chain in plain words",
-    text: "Paste a wallet, ask a question, and get a plain report on Robinhood Chain without anyone seeing what you looked up.",
+    text: "Paste a wallet, ask a question, and get a plain report on Solana without anyone seeing what you looked up.",
     length: "0:17",
   },
   {
@@ -49,7 +49,7 @@ export const VIDEOS: ProductVideo[] = [
     tab: "Top up",
     kind: "Tutorial",
     title: "Top up credit privately",
-    text: "Pay in USDC, USDT or USDG on Robinhood Chain and watch it land as private vouchers that never point back to your chats.",
+    text: "Pay in USDC, USDT or USDG on Solana and watch it land as private vouchers that never point back to your chats.",
     length: "0:17",
   },
 ];

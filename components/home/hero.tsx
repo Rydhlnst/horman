@@ -21,7 +21,7 @@ const EXAMPLES = [
   "Explain my blood test in plain words",
   "How do I ask for 22k without losing the offer?",
   "Make an image of a quiet lake at sunrise",
-  "What did 0x7a3f…e91c do in the last 24 hours?",
+  "What did 7xKp…Wq3F do in the last 24 hours?",
   "Plan a 3-day trip to New York City on a mid-range budget",
 ];
 
@@ -40,8 +40,8 @@ const MAKERS = [
 ] as const;
 
 const CHIPS = [
-  { label: "Read a wallet", prompt: "What did 0x7a3f…e91c do in the last 24 hours?", Icon: PiCubeDuotone },
-  { label: "Check a token", prompt: "Is the token at 0x4c1d…a07b safe to hold?", Icon: PiShieldCheckDuotone },
+  { label: "Read a wallet", prompt: "What did 7xKp…Wq3F do in the last 24 hours?", Icon: PiCubeDuotone },
+  { label: "Check a token", prompt: "Is the token at 4cWb…pump safe to hold?", Icon: PiShieldCheckDuotone },
   { label: "Set up an agent", prompt: "Every Monday, brief me on what moved in my market", Icon: PiRobotDuotone },
   { label: "Make an image", prompt: "Create an image of a quiet mountain lake at sunrise, in soft sage tones", Icon: PiImageDuotone },
 ];

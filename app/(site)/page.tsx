@@ -53,7 +53,7 @@ const ABILITIES: [IconLike, string][] = [
   [PiGlobeDuotone, "Web research"],
   [PiEyeDuotone, "Wallet watch"],
   [PiShieldCheckDuotone, "Token checks"],
-  [PiFileCodeDuotone, "Contract reads"],
+  [PiFileCodeDuotone, "Program reads"],
   [PiImageDuotone, "Images and video"],
   [PiMicrophoneDuotone, "Voice"],
   [PiPlugsConnectedDuotone, "MCP tools"],
@@ -70,7 +70,7 @@ const AUDIENCE = [
   {
     Icon: PiChartLineUpDuotone,
     title: "Crypto teams and traders",
-    text: "Research wallets and watch pools without broadcasting what you’re watching.",
+    text: "Research Solana wallets and watch pools without broadcasting what you’re watching.",
   },
   { Icon: PiCodeDuotone, title: "Developers", text: "Ship AI features with the same private pipeline through the API and SDKs." },
   {
@@ -100,8 +100,8 @@ const COMPARE = [
 ];
 
 const ONCHAIN: [IconLike, string][] = [
-  [PiTagDuotone, "Wallets tagged as funds, protocols, bridges and bots"],
-  [PiWarningDuotone, "Risk flags on fresh or unverified contracts"],
+  [PiTagDuotone, "Wallets tagged as funds, market makers, MEV bots and dev wallets"],
+  [PiWarningDuotone, "Risk flags on fresh mints with live mint or freeze authority"],
   [PiBellDuotone, "Alerts the moment something moves"],
 ];
 
@@ -281,7 +281,7 @@ export default function HomePage() {
                 <em className="serif">in plain words.</em>
               </h2>
               <p className="max-w-[46ch] text-[17px] leading-relaxed text-muted">
-                Horman reads blocks and contract events and turns them into answers you can understand. Your questions stay private, so nobody
+                Horman reads Solana transactions and program logs and turns them into answers you can understand. Your questions stay private, so nobody
                 sees what you’re watching.
               </p>
               <ul className="grid gap-2.5 text-[15px]">
@@ -304,14 +304,14 @@ export default function HomePage() {
                 <PiLockKeyDuotone size={14} className="text-accent" /> Chat · sealed · sample
               </span>
               <div className="ml-auto max-w-[86%] rounded-[18px_18px_6px_18px] bg-panel px-4 py-3 text-[15px]">
-                What did 0x7a3f…e91c do in the last 24 hours?
+                What did 7xKp…Wq3F do in the last 24 hours?
               </div>
               <div className="flex gap-3">
                 <HormanMark size={30} className="mt-0.5 flex-none" />
                 <div className="flex min-w-0 flex-col gap-3">
                   <span className="pill pill-accent self-start">used onchain context</span>
                   <p className="text-[15px] leading-relaxed">
-                    This wallet belongs to a market-making cluster of 12 addresses. It pulled 38% of its liquidity from one DEX pool and
+                    This wallet belongs to a market-making cluster of 12 addresses. It pulled 38% of its liquidity from one Raydium pool and
                     moved it into a stable pair. Risk: low.
                   </p>
                   <div className="grid grid-cols-3 gap-2 max-[480px]:grid-cols-1">

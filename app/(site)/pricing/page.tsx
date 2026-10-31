@@ -22,7 +22,7 @@ const FREE = ["Auto, which answers with a light open model", FREE_LIMIT, "[N] im
 const HOLDER = [
   `Hold ${HOLD} in your wallet to unlock every model`,
   "Pick any model, in every mode it runs in",
-  "Pay per use with credit: top-ups of $1 to $200 in USDC, USDT or USDG",
+  "Pay per use with credit: top-ups of $1 to $200 in USDC, USDT or USDG on Solana",
   "Paid with private vouchers that never link to your chats",
 ];
 
@@ -33,7 +33,7 @@ const PRICES = [
   { Icon: PiImageDuotone, use: "Image", covers: "One image, 1024 × 1024", price: "[PRICE] per image" },
   { Icon: PiVideoCameraDuotone, use: "Video", covers: "Short clip", price: "[PRICE] per second" },
   { Icon: PiMicrophoneDuotone, use: "Voice", covers: "Voiceover or speech", price: "[PRICE] per minute" },
-  { Icon: PiCrosshairDuotone, use: "Onchain lookup", covers: "Wallet, contract or transaction", price: "[PRICE] per lookup" },
+  { Icon: PiCrosshairDuotone, use: "Onchain lookup", covers: "Wallet, token, program or transaction", price: "[PRICE] per lookup" },
 ];
 
 export default function PricingPage() {

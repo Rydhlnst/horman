@@ -44,7 +44,7 @@ export default function TopupPage() {
               A top-up, <em>start to finish.</em>
             </>
           }
-          lede="Pick an amount, pay in USDC, USDT or USDG on Robinhood Chain, and watch it land as private vouchers."
+          lede="Pick an amount, pay in USDC, USDT or USDG on Solana, and watch it land as private vouchers."
         />
         <Reveal className="folder tone-paper lined video-tabs">
           <span className="folder-tab">Video · sample data</span>

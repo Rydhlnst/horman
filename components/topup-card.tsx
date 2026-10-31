@@ -3,7 +3,7 @@
 import { ArrowUpRight, LockKeyhole, MessageSquare, Ticket, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
-import { SiRobinhood } from "react-icons/si";
+import { SiSolana } from "react-icons/si";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { TOPUP_MAX, TOPUP_MIN, TOPUP_PRESETS, TOPUP_TOKENS, type TopupToken } from "@/lib/site";
 
@@ -16,7 +16,7 @@ const STEPS = [
   {
     Icon: Wallet,
     title: "Pay from your wallet",
-    text: "Send USDC, USDT or USDG on Robinhood Chain. No card, no billing address.",
+    text: "Send USDC, USDT or USDG on Solana from Phantom, Solflare or Backpack. No card, no billing address.",
   },
   {
     Icon: Ticket,
@@ -86,7 +86,7 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
 
   return (
     <div className="folder tone-night mt-0">
-      <span className="folder-tab">Voucher · Robinhood Chain</span>
+      <span className="folder-tab">Voucher · Solana</span>
       <div className="flex items-end justify-between gap-4 border-b-2 border-dashed border-white/15 p-7 max-[480px]:p-5">
         <div className="flex flex-col gap-1">
           <span className="label !text-night-muted">You get</span>
@@ -102,10 +102,10 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
         <div className="flex items-center justify-between gap-4">
           <dt className="text-night-muted">Network</dt>
           <dd className="flex items-center gap-2.5 font-medium">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#CCFF00] text-black" aria-hidden="true">
-              <SiRobinhood size={15} />
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[linear-gradient(135deg,#9945FF,#14F195)] text-white" aria-hidden="true">
+              <SiSolana size={14} />
             </span>
-            Robinhood Chain
+            Solana
           </dd>
         </div>
         <div className="flex items-center justify-between gap-4">

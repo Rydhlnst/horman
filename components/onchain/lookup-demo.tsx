@@ -9,7 +9,7 @@ import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { reducedMotion } from "@/lib/chat";
 import { LOOKUPS, type Level, type Lookup } from "@/lib/onchain";
 
-const READING = ["Reading blocks", "Tagging linked wallets", "Scoring the risk"];
+const READING = ["Reading recent slots", "Tagging linked wallets", "Scoring the risk"];
 
 function Mark({ level }: { level: Level }) {
   if (level === "ok") return <Check size={14} />;
@@ -17,7 +17,7 @@ function Mark({ level }: { level: Level }) {
   return <X size={14} />;
 }
 
-/** A lookup you can switch between wallet, token and contract; each one "reads" for a moment, then reports. */
+/** A lookup you can switch between wallet, token and program; each one "reads" for a moment, then reports. */
 export function LookupDemo() {
   const [id, setId] = useState<Lookup["id"]>("wallet");
   const [phase, setPhase] = useState(0);
@@ -44,7 +44,7 @@ export function LookupDemo() {
 
       <div className="lookup-top">
         <SlidingTabs label="What to look up" value={id} onChange={pick} items={LOOKUPS.map((l) => ({ id: l.id, label: l.label }))} />
-        <span className="lookup-chain">Robinhood Chain</span>
+        <span className="lookup-chain">Solana</span>
       </div>
 
       <div className="lookup-ask">

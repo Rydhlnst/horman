@@ -28,22 +28,22 @@ export const AGENTS: Agent[] = [
     id: "wallet",
     name: "Watch a wallet",
     blurb: "Tells you the moment a wallet you follow makes a big move.",
-    trigger: { kind: "event", text: "When 0x7a3f…e91c moves over $50K" },
-    steps: ["Read each new block", "Tag the counterparties", "Score the move", "Explain it in one line"],
+    trigger: { kind: "event", text: "When 7xKp…Wq3F moves over $50K" },
+    steps: ["Read each new slot", "Tag the counterparties", "Score the move", "Explain it in one line"],
     result: {
       title: "Alert · 14:02",
-      lines: ["0x7a3f…e91c moved $412K into a stable pair", "Counterparty: a known market-making cluster", "Read as routine risk-trimming, low risk"],
+      lines: ["7xKp…Wq3F moved $412K into a USDC pair", "Counterparty: a known market-making cluster", "Read as routine risk-trimming, low risk"],
     },
   },
   {
     id: "launch",
     name: "Token launch radar",
-    blurb: "Checks every new token on Robinhood Chain before you look at it.",
+    blurb: "Checks every new Solana token, pump.fun launches included, before you look at it.",
     trigger: { kind: "event", text: "New token with over $20K liquidity" },
-    steps: ["Spot the launch", "Read the contract", "Check holders and liquidity", "Score the risk"],
+    steps: ["Spot the launch", "Check mint and freeze authority", "Check holders and liquidity", "Score the risk"],
     result: {
       title: "3 new tokens today · 1 passed",
-      lines: ["$DEMO: verified, liquidity locked, medium risk", "Two others: owner can mint, skipped", "Full checks are in your inbox"],
+      lines: ["$DEMO: authorities revoked, LP burned, medium risk", "Two others: mint authority still live, skipped", "Full checks are in your inbox"],
     },
   },
   {

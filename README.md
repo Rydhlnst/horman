@@ -19,7 +19,7 @@ npm run dev   # http://localhost:3280
 | `/access`     | Early access form                                                 |
 | `/topup`      | How a top-up works plus the amount picker; links to `/chat#topup` |
 | `/agents`     | Agent templates with a preview run, and the agents tutorial video |
-| `/onchain`    | Wallet, token and contract lookup demo, and the onchain video      |
+| `/onchain`    | Solana wallet, token and program lookup demo, and the onchain video |
 | `/guides`     | Every tutorial and how-it-works video                             |
 
 ## Where things live
@@ -30,7 +30,7 @@ npm run dev   # http://localhost:3280
 - `lib/site.ts` – privacy modes, nav menus and top-up limits.
 - `components/chat/` – the chat app. Chats are kept in this browser's localStorage; Ephemeral chats are never saved.
 
-## Contract address and domain
+## CA (mint address) and domain
 
 The site lives at https://horman.dev (`SITE_URL` in `lib/site.ts`; used for metadata, robots and sitemap).
 The Copy CA buttons (hero, top bar, menu, footer) read `NEXT_PUBLIC_CA`. Until it is set they say the
@@ -64,5 +64,5 @@ pause button that always works.
 - `components/watermelon/` holds adapted copies of Watermelon UI components (MIT, https://ui.watermelon.sh): sliding tabs, split accordion and copy button. The ⌘K search follows its command-search.
 - `components/blocks/` adapts Watermelon UI blocks (MIT) inside Horman folder cards: announcement-1 (bar over the navbar), stats-2, newsletter-3 (hands the email to /access), cta-3, and error-1 for the 404 page. The navbar follows navigation-3. Testimonials, team, blog, career and auth blocks are not used: there is no real content for them yet.
 - Feature icons are Phosphor Duotone through `react-icons/pi`; small UI marks stay on lucide.
-- `/onchain` and `/agents` are the two pages that set Horman apart: a lookup demo (wallet, token, contract on Robinhood Chain) and an agent template demo. Their data lives in `lib/onchain.ts` and `lib/agents.ts`; addresses are made up and every number is a sample.
+- `/onchain` and `/agents` are the two pages that set Horman apart: a lookup demo (wallet, token, program on Solana) and an agent template demo. Their data lives in `lib/onchain.ts` and `lib/agents.ts`; addresses are made up and every number is a sample.
 - The model lineup in `lib/site.ts` (`MODEL_GROUPS`) is a preview and still needs confirming before launch.

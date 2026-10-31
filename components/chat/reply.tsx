@@ -6,14 +6,15 @@ import { LOOKUPS } from "@/lib/onchain";
 export const IMAGE_INTENT =
   /^(please\s+)?(create|make|draw|generate|paint|design)\s+(me\s+)?(an?\s+)?(image|picture|photo|illustration|drawing|poster|logo|wallpaper)/i;
 
-const ONCHAIN = /0x[0-9a-f]|\b(wallet|token|contract|onchain|on-chain|holders?|liquidity|tx|transaction)\b/i;
+const SOL_ADDR = /[1-9A-HJ-NP-Za-km-z]{4}…[1-9A-HJ-NP-Za-km-z]{4}|\b[1-9A-HJ-NP-Za-km-z]{32,44}\b/;
+const ONCHAIN = new RegExp(`${SOL_ADDR.source}|\\b(wallet|token|mint|program|contract|onchain|on-chain|holders?|liquidity|tx|transaction|signature|solana|sol|spl|pump\\.fun|raydium|jupiter)\\b`, "i");
 const AGENT = /\b(agent|every (day|week|monday|morning)|watch|alert|brief me|remind|monitor)\b/i;
 
 const LEVEL_WORD = { ok: "fine", warn: "worth a look", bad: "risky" } as const;
 
 /** A sample onchain report in chat form, picked by what the question is about. */
 function onchainReply(question: string) {
-  const id = /contract|function|explain/i.test(question) ? "contract" : /token|holder|safe|liquidity|\$/i.test(question) ? "token" : "wallet";
+  const id = /program|contract|instruction|explain/i.test(question) ? "contract" : /token|holder|safe|liquidity|\$/i.test(question) ? "token" : "wallet";
   const l = LOOKUPS.find((x) => x.id === id)!;
   const facts = l.metrics.map((m) => `${m.label}: **${m.value}**${m.note ? ` (${m.note})` : ""}`).join("\n");
   const checks = l.checks.map((c) => `${c.level === "ok" ? "✓" : "!"} ${c.text} — ${LEVEL_WORD[c.level]}`).join("\n");
@@ -22,7 +23,7 @@ function onchainReply(question: string) {
 
 /** A sample agent setup, picked by what the question asks to watch or repeat. */
 function agentReply(question: string) {
-  const id = /0x|wallet/i.test(question) ? "wallet" : /launch|new token/i.test(question) ? "launch" : /research|report/i.test(question) ? "research" : "brief";
+  const id = SOL_ADDR.test(question) || /wallet/i.test(question) ? "wallet" : /launch|new token/i.test(question) ? "launch" : /research|report/i.test(question) ? "research" : "brief";
   const a = AGENTS.find((x) => x.id === id)!;
   const steps = a.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
   return `**Agent ready: ${a.name}** (sample)\n\nRuns: **${a.trigger.text}**\n${steps}\n\nResults land in your Horman inbox, sealed to you. Live agents open with wave 1.`;

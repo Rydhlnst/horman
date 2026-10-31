@@ -1,6 +1,6 @@
 "use client";
 
-// The token's contract address, copied in one click. It comes from the
+// The token's CA (its Solana mint address), copied in one click. It comes from the
 // NEXT_PUBLIC_CA env var (set in Vercel, then redeploy); until it's set the
 // button says the address is coming instead of showing a made-up one.
 
@@ -22,7 +22,7 @@ export function CaButton({ tone = "light", className = "" }: { tone?: "light" | 
 
   if (!CA) {
     return (
-      <span className={`ca-btn ${tone} soon ${className}`} title="The contract address will be posted here at launch">
+      <span className={`ca-btn ${tone} soon ${className}`} title="The CA (mint address) will be posted here at launch">
         <b>CA</b> Announced at launch
       </span>
     );
@@ -44,7 +44,7 @@ export function CaButton({ tone = "light", className = "" }: { tone?: "light" | 
   };
 
   return (
-    <button type="button" className={`ca-btn ${tone} ${className}`} onClick={copy} aria-label={`Copy contract address ${CA}`} title={CA}>
+    <button type="button" className={`ca-btn ${tone} ${className}`} onClick={copy} aria-label={`Copy CA (mint address) ${CA}`} title={CA}>
       <b>CA</b>
       <span className={copied ? "" : "font-mono"} aria-live="polite">
         {copied ? "Copied" : short(CA)}

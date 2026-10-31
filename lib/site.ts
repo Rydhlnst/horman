@@ -66,7 +66,7 @@ export const PRODUCT_MENU: NavItem[] = [
   { href: "/#models", title: "Models", note: "Every model and the modes it runs in" },
   { href: "/#create", title: "Create", note: "Images, video, voice and music" },
   { href: "/agents", title: "Agents", note: "Briefs, wallet watches and launch radar" },
-  { href: "/onchain", title: "Onchain", note: "Wallets, tokens and contracts, explained" },
+  { href: "/onchain", title: "Onchain", note: "Solana wallets, tokens and programs, explained" },
   { href: "/#modes", title: "Privacy modes", note: "Sealed, Ephemeral and Open" },
 ];
 
@@ -80,7 +80,7 @@ export const DEV_MENU: NavItem[] = [
 export const TOPUP_MIN = 1;
 export const TOPUP_MAX = 200;
 export const TOPUP_PRESETS = [1, 5, 10, 25];
-/** Stablecoins accepted for top-ups. */
+/** Stablecoins accepted for top-ups, all on Solana. */
 export const TOPUP_TOKENS = ["USDC", "USDT", "USDG"] as const;
 export type TopupToken = (typeof TOPUP_TOKENS)[number];
 

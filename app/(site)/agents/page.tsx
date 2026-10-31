@@ -10,7 +10,7 @@ import "../product.css";
 
 export const metadata: Metadata = {
   title: "Agents",
-  description: "Agents that brief you, watch wallets and check new tokens on Robinhood Chain, running privately and reporting only to you.",
+  description: "Agents that brief you, watch wallets and check new tokens on Solana, running privately and reporting only to you.",
 };
 
 const PRIVATE = [

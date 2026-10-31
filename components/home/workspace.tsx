@@ -82,14 +82,14 @@ function OnchainMock() {
   return (
     <div className="mock">
       <div className="mock-head">
-        <span>0x7a3f…e91c · 24h</span>
+        <span>7xKp…Wq3F · 24h</span>
         <b className="mock-tag warn">1 flag</b>
       </div>
       <div className="mock-row">
         <Check className="ok" /> Tagged: market maker <span>12 wallets</span>
       </div>
       <div className="mock-row">
-        <TriangleAlert className="warn" /> Fresh contract, not verified
+        <TriangleAlert className="warn" /> Fresh mint, freeze authority still on
       </div>
       <div className="mock-row">
         <Check className="ok" /> Liquidity moved to a stable pair
@@ -114,7 +114,7 @@ const CARDS = [
   { tone: "night", tag: "Chat", title: "Ask anything, any model.", text: "Quick facts to deep research. Auto picks the right model.", Mock: ChatMock },
   { tone: "pale", tag: "Create", title: "A sentence becomes a picture.", text: "Images, short clips, voiceovers and music.", Mock: CreateMock },
   { tone: "sage", tag: "Agents", title: "Hand off the busywork.", text: "Research, monitoring and reports that run privately too.", Mock: AgentMock },
-  { tone: "paper", tag: "Onchain · built in", title: "Read the chain in plain words.", text: "Labeled, scored answers about any wallet or contract.", Mock: OnchainMock },
+  { tone: "paper", tag: "Onchain · built in", title: "Read the chain in plain words.", text: "Labeled, scored answers about any Solana wallet, token or program.", Mock: OnchainMock },
   { tone: "mist", tag: "Developers", title: "The same pipeline, in your app.", text: "API, SDKs and MCP tools with the same modes.", Mock: ApiMock },
 ];
 

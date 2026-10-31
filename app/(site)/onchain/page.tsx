@@ -19,15 +19,15 @@ import "../product.css";
 
 export const metadata: Metadata = {
   title: "Onchain",
-  description: "Ask Robinhood Chain about any wallet, token or contract in plain words, without anyone seeing what you watch.",
+  description: "Ask Solana about any wallet, token or program in plain words, without anyone seeing what you watch.",
 };
 
 const READS = [
   { Icon: PiWalletDuotone, title: "Wallets", text: "Who a wallet is, what it holds, who it trades with, and the wallets that move with it." },
-  { Icon: PiCoinDuotone, title: "Tokens", text: "Holders, how concentrated they are, liquidity and locks, and what the deployer did." },
-  { Icon: PiFileCodeDuotone, title: "Contracts", text: "What each function does, in plain words, and which powers the owner kept." },
+  { Icon: PiCoinDuotone, title: "Tokens", text: "Holders, how concentrated they are, mint and freeze authority, LP burns, and what the dev wallet did." },
+  { Icon: PiFileCodeDuotone, title: "Programs", text: "What each instruction does, in plain words, and which authorities the deployer kept." },
   { Icon: PiArrowsLeftRightDuotone, title: "Transactions", text: "Paste a hash and get the story: who paid whom, through what, and why it matters." },
-  { Icon: PiRocketLaunchDuotone, title: "Launches", text: "New tokens checked as they appear: contract, holders, liquidity, risk score." },
+  { Icon: PiRocketLaunchDuotone, title: "Launches", text: "New mints checked as they appear, pump.fun included: authorities, holders, liquidity, risk score." },
   { Icon: PiBellRingingDuotone, title: "Alerts", text: "Hand a wallet or token to an agent and hear the moment something moves." },
 ];
 
@@ -51,7 +51,7 @@ export default function OnchainPage() {
               Ask the chain <em>in plain words.</em>
             </>
           }
-          lede="Wallets, tokens and contracts on Robinhood Chain, read for you and explained like a person would. Your lookups stay sealed, so nobody learns what you’re watching."
+          lede="Wallets, tokens and programs on Solana, read for you and explained like a person would. Your lookups stay sealed, so nobody learns what you’re watching."
         >
           <div className="flex flex-wrap gap-2.5">
             <Link href="/chat" className="btn btn-ink">
@@ -91,13 +91,13 @@ export default function OnchainPage() {
           kicker="What it reads"
           title={
             <>
-              Everything a block explorer shows, <em>explained.</em>
+              Everything Solscan shows, <em>explained.</em>
             </>
           }
-          lede="Ask in your own words. Horman reads the blocks, tags who is who and tells you what it means."
+          lede="Ask in your own words. Horman reads the slots, transactions and program logs, tags who is who and tells you what it means."
         />
         <Reveal className="folder tone-paper lined mt-16 p-3">
-          <span className="folder-tab">Robinhood Chain</span>
+          <span className="folder-tab">Solana</span>
           <Stagger className="reads-grid" gap={0.06}>
             {READS.map(({ Icon, title, text }) => (
               <StaggerItem key={title} className="reads-card">
@@ -162,7 +162,7 @@ export default function OnchainPage() {
               <br />
               <span className="text-pale">sealed.</span>
             </h2>
-            <p className="max-w-[46ch] text-night-muted">Paste a wallet, a token or a hash into the chat, or let an agent watch it for you.</p>
+            <p className="max-w-[46ch] text-night-muted">Paste a wallet, a mint or a transaction signature into the chat, or let an agent watch it for you.</p>
           </div>
           <div className="flex flex-wrap gap-2.5">
             <Link href="/chat" className="btn border-pale !bg-none bg-pale text-night hover:border-white hover:bg-white">
