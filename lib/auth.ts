@@ -2,7 +2,7 @@
 // signature checks and the $HORMAN balance lookup. Nothing here runs in the browser.
 import "server-only";
 import { createHmac, createPublicKey, randomBytes, timingSafeEqual, verify } from "node:crypto";
-import { HOLD_MIN } from "@/lib/site";
+import { CA_ADDRESS, HOLD_MIN } from "@/lib/site";
 export { signInMessage } from "@/lib/siws";
 
 export const NONCE_COOKIE = "horman_nonce";
@@ -108,7 +108,7 @@ function allowlisted(address: string) {
 }
 
 export async function holding(address: string): Promise<Holding> {
-  const ca = process.env.NEXT_PUBLIC_CA?.trim() || null;
+  const ca = process.env.NEXT_PUBLIC_CA?.trim() || CA_ADDRESS;
   if (allowlisted(address)) {
     const read = ca && isSolanaAddress(ca) ? await readBalance(address, ca) : null;
     return { ca: ca && isSolanaAddress(ca) ? ca : null, balance: read, holder: true };

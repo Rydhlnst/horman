@@ -6,8 +6,9 @@
 
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CA_ADDRESS } from "@/lib/site";
 
-export const CA = process.env.NEXT_PUBLIC_CA?.trim() ?? "";
+export const CA = process.env.NEXT_PUBLIC_CA?.trim() || CA_ADDRESS;
 
 const short = (ca: string) => (ca.length > 14 ? `${ca.slice(0, 6)}…${ca.slice(-4)}` : ca);
 
