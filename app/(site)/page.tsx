@@ -175,7 +175,7 @@ export default function HomePage() {
               The models you know, <em>kept private.</em>
             </>
           }
-          lede="Pick a model yourself or let Auto choose. Open-weight models run sealed; the big hosted ones are there when you switch to Open."
+          lede="Pick a model yourself or let Auto choose. Every model works in every mode: open-weight ones through private providers, the big hosted ones read by their lab."
         />
         <Models />
       </section>

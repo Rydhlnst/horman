@@ -8,17 +8,17 @@ const FAQ: SplitItem[] = [
   {
     Icon: PiLockKeyDuotone,
     q: "Can Horman read my chats?",
-    a: "In Sealed mode, no. Your prompt is encrypted to an attested enclave on your device and the answer comes back encrypted to you. In Ephemeral mode, requests are processed in memory and nothing is stored. Open mode keeps standard logs.",
+    a: "Horman doesn’t store your chats. Saved chats live only in your browser, and Ephemeral chats aren’t saved at all. Your message passes through Horman to the model: open-weight models use providers that don’t keep or train on it, and hosted models such as GPT, Claude and Gemini are read by their host. Sealed enclaves, where not even Horman could read a chat, are next.",
   },
   {
     Icon: PiImageDuotone,
     q: "Can Horman make images and videos?",
-    a: "Yes. Describe what you want and Horman creates images, short video clips, voiceovers or music, under the same privacy modes as chat.",
+    a: "Not yet. Image, video and voice models are on the way. Until then, images in the chat are samples.",
   },
   {
     Icon: PiCpuDuotone,
     q: "Which AI models can I use?",
-    a: `Everyone can use Auto, which picks a light open model for each question. Holders can choose any model: open-weight ones such as Llama, DeepSeek, Qwen and Kimi in every mode, and hosted ones such as GPT, Claude and Gemini in Open mode. The launch lineup may still change.`,
+    a: `Everyone can use Auto, which picks a light open model for each question. Holders can choose any model in any mode: open-weight ones such as Llama, DeepSeek, Qwen and Kimi, and hosted ones such as GPT, Claude and Gemini. The launch lineup may still change.`,
   },
   {
     Icon: PiKeyDuotone,

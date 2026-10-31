@@ -63,11 +63,6 @@ export async function POST(req: NextRequest) {
   }
   if (!messages.length) return json(400, "That message is too long.");
 
-  // Hosted models read the request themselves, so they are offered in Open mode only.
-  if (!entry.modes.includes(mode)) {
-    return json(400, `${tier} is hosted by ${entry.maker}, so it’s only offered in Open mode. Switch to Open to use it, or pick an open-weight model.`);
-  }
-
   const session = unseal<{ address: string }>(req.cookies.get(SESSION_COOKIE)?.value);
   let holder = false;
   if (!entry.free) {
@@ -99,8 +94,9 @@ export async function POST(req: NextRequest) {
         stream: true,
         max_tokens: MAX_OUTPUT_TOKENS,
         messages: [{ role: "system", content: SYSTEM }, ...messages],
-        // Sealed and Ephemeral only use providers that don't keep or train on prompts.
-        ...(mode === "open" ? {} : { provider: { data_collection: "deny" } }),
+        // Outside Open, open-weight models only use providers that don't keep or train on prompts.
+        // Hosted models (GPT, Claude, Gemini) are read by their lab; the chat says so.
+        ...(mode === "open" || entry.hosted ? {} : { provider: { data_collection: "deny" } }),
       }),
       signal: req.signal,
     }).catch(() => null);
@@ -120,7 +116,7 @@ export async function POST(req: NextRequest) {
     const msg =
       upstream?.status === 402
         ? "The model credit has run out. The team has been told."
-        : upstream?.status === 404 && mode !== "open"
+        : upstream?.status === 404 && mode !== "open" && !entry.hosted
           ? `${tier} has no private provider available right now. Try another model, or switch to Open.`
           : `${tier} couldn’t answer right now. Try again in a moment.`;
     return json(502, msg);

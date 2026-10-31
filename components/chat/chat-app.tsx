@@ -85,7 +85,8 @@ export function ChatApp() {
   const mode = MODES[modeIndex];
   // Holders-only models need a signed-in wallet that holds the token.
   const { session } = useWalletSession();
-  const locked = tool === "chat" && !CHAT_MODELS.find((m) => m.name === tier)?.free && !session?.holder;
+  const chosen = CHAT_MODELS.find((m) => m.name === tier);
+  const locked = tool === "chat" && !chosen?.free && !session?.holder;
   const active = chats.find((c) => c.id === activeId) ?? null;
   const messages = useMemo(() => active?.messages ?? [], [active]);
 
@@ -338,7 +339,7 @@ export function ChatApp() {
           <WalletButton />
         </div>
         <div className="bg-mist py-2 pl-[max(16px,env(safe-area-inset-left,0px))] pr-[max(16px,env(safe-area-inset-right,0px))] text-[13px] text-fg/75">
-          Live beta. Sealed enclaves aren’t switched on yet: until they are, Sealed and Ephemeral chats use open-weight models through providers that don’t keep or train on your data. Images are still samples.
+          Live beta. Every model works in every mode. Open-weight models use providers that don’t keep or train on your data; GPT, Claude and Gemini are read by their host. Horman stores nothing. Images are still samples.
         </div>
 
         <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
@@ -500,6 +501,11 @@ export function ChatApp() {
               <button type="button" className="font-semibold text-accent underline underline-offset-2" onClick={() => setTier("Auto")}>
                 Use Auto, free
               </button>
+            </p>
+          )}
+          {tool === "chat" && !locked && mode.key !== "open" && chosen?.hosted && (
+            <p className="mx-auto mt-2 max-w-[780px] text-center text-[13px] text-muted" role="status">
+              {chosen.name} is hosted by {chosen.maker}, so {chosen.maker} reads this chat to answer it. Horman still stores nothing.
             </p>
           )}
           <p className="mx-auto mt-2 max-w-[780px] text-center text-xs text-faint">

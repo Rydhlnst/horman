@@ -52,7 +52,6 @@ export function Models() {
           variants={stagger(0.04)}
         >
           {current.models.map((m) => {
-            const everyMode = m.modes.length === 3;
             return (
               <motion.li key={m.name} className="model-card" variants={fadeUp}>
                 <div className="model-top">
@@ -74,9 +73,9 @@ export function Models() {
                     {m.maker} · {m.note}
                   </p>
                 </div>
-                <p className={`model-where ${everyMode ? "every" : ""}`}>
-                  {everyMode ? <LockKeyhole size={13} /> : <Globe size={13} />}
-                  {everyMode ? "Every mode, sealed too" : "Open mode only"}
+                <p className={`model-where ${m.hosted ? "" : "every"}`}>
+                  {m.hosted ? <Globe size={13} /> : <LockKeyhole size={13} />}
+                  {m.hosted ? `Every mode · read by ${m.maker}` : "Every mode · private provider"}
                 </p>
               </motion.li>
             );
@@ -85,8 +84,8 @@ export function Models() {
       </AnimatePresence>
       <p className="mt-4 text-[13px] text-faint">
         Without the token you get Auto, which answers with a light open model. Holders choose any model and pay for use with credit.
-        Open-weight models run inside the enclave, so they work in every mode; hosted models are only offered in Open mode. The launch
-        lineup may still change.
+        Every model works in every mode. Open-weight models answer through providers that don’t keep or train on your data; hosted
+        models are read by the lab that hosts them. The launch lineup may still change.
       </p>
     </div>
   );

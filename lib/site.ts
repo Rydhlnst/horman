@@ -21,9 +21,9 @@ export const MODES: Mode[] = [
   {
     key: "sealed",
     label: "Sealed",
-    short: "Private providers now, enclave next",
-    hero: "Answered by open-weight models through providers that don’t keep or train on your data. Horman stores nothing. Sealed enclaves are next.",
-    desc: "Today: open-weight models through providers that don’t keep or train on your data, and Horman stores nothing. Next: your prompt encrypted on your device to an attested enclave, so not even Horman can read it.",
+    short: "Nothing kept by Horman",
+    hero: "Horman stores nothing. Open-weight models answer through providers that don’t keep or train on your data; GPT, Claude and Gemini are read by their host.",
+    desc: "Horman stores nothing. Open-weight models answer through providers that don’t keep or train on your data; hosted models such as GPT, Claude and Gemini are read by their host to answer. Next: your prompt encrypted on your device to an attested enclave.",
     fit: "Best for contracts, financials, strategies and anything sensitive.",
     rows: [
       ["You", "yes", "yes", "—"],
@@ -101,16 +101,15 @@ export const FREE_LIMIT = "[N] chats a day";
  * `logo` is a file in /public/models (LobeHub Icons, MIT); Auto uses the Horman mark.
  * `free` marks the free tier, open to everyone; every other model needs HOLD.
  */
-export type ModelEntry = { name: string; maker: string; note: string; modes: ModeKey[]; logo?: string; free?: boolean };
+export type ModelEntry = { name: string; maker: string; note: string; modes: ModeKey[]; logo?: string; free?: boolean; hosted?: boolean };
 export type ModelGroup = { id: string; label: string; models: ModelEntry[] };
 
 const EVERY_MODE: ModeKey[] = ["sealed", "ephemeral", "open"];
-const OPEN_ONLY: ModeKey[] = ["open"];
 
 /**
- * Preview lineup, to be confirmed before launch. Open-weight models run inside the
- * enclave, so they work in every mode; hosted models from the big labs read the
- * request themselves, so they are offered in Open mode only.
+ * Preview lineup, to be confirmed before launch. Every model works in every mode.
+ * Open-weight models go through providers that don't keep or train on data; hosted
+ * models (`hosted`) are read by the lab that hosts them, and the site says so.
  */
 export const MODEL_GROUPS: ModelGroup[] = [
   {
@@ -123,9 +122,9 @@ export const MODEL_GROUPS: ModelGroup[] = [
       { name: "Qwen", logo: "qwen-color", maker: "Alibaba", note: "Many languages, long documents", modes: EVERY_MODE },
       { name: "Kimi", logo: "kimi-color", maker: "Moonshot AI", note: "Agents and tool use", modes: EVERY_MODE },
       { name: "gpt-oss", logo: "openai", maker: "OpenAI", note: "Open-weight reasoning", modes: EVERY_MODE },
-      { name: "GPT", logo: "openai", maker: "OpenAI", note: "Hosted by OpenAI", modes: OPEN_ONLY },
-      { name: "Claude", logo: "claude-color", maker: "Anthropic", note: "Hosted by Anthropic", modes: OPEN_ONLY },
-      { name: "Gemini", logo: "gemini-color", maker: "Google", note: "Hosted by Google", modes: OPEN_ONLY },
+      { name: "GPT", logo: "openai", maker: "OpenAI", note: "Hosted by OpenAI", modes: EVERY_MODE, hosted: true },
+      { name: "Claude", logo: "claude-color", maker: "Anthropic", note: "Hosted by Anthropic", modes: EVERY_MODE, hosted: true },
+      { name: "Gemini", logo: "gemini-color", maker: "Google", note: "Hosted by Google", modes: EVERY_MODE, hosted: true },
     ],
   },
   {
@@ -134,8 +133,8 @@ export const MODEL_GROUPS: ModelGroup[] = [
     models: [
       { name: "FLUX", logo: "flux", maker: "Black Forest Labs", note: "Photoreal and illustration", modes: EVERY_MODE },
       { name: "Stable Diffusion", logo: "stability-color", maker: "Stability AI", note: "Styles, edits and inpainting", modes: EVERY_MODE },
-      { name: "Imagen", logo: "google-color", maker: "Google", note: "Hosted by Google", modes: OPEN_ONLY },
-      { name: "GPT Image", logo: "openai", maker: "OpenAI", note: "Hosted by OpenAI", modes: OPEN_ONLY },
+      { name: "Imagen", logo: "google-color", maker: "Google", note: "Hosted by Google", modes: EVERY_MODE, hosted: true },
+      { name: "GPT Image", logo: "openai", maker: "OpenAI", note: "Hosted by OpenAI", modes: EVERY_MODE, hosted: true },
     ],
   },
   {
@@ -143,8 +142,8 @@ export const MODEL_GROUPS: ModelGroup[] = [
     label: "Video",
     models: [
       { name: "Wan", logo: "alibaba-color", maker: "Alibaba", note: "Short clips from text or a photo", modes: EVERY_MODE },
-      { name: "Veo", logo: "google-color", maker: "Google", note: "Hosted by Google", modes: OPEN_ONLY },
-      { name: "Kling", logo: "kling-color", maker: "Kuaishou", note: "Hosted by Kuaishou", modes: OPEN_ONLY },
+      { name: "Veo", logo: "google-color", maker: "Google", note: "Hosted by Google", modes: EVERY_MODE, hosted: true },
+      { name: "Kling", logo: "kling-color", maker: "Kuaishou", note: "Hosted by Kuaishou", modes: EVERY_MODE, hosted: true },
     ],
   },
   {
@@ -153,7 +152,7 @@ export const MODEL_GROUPS: ModelGroup[] = [
     models: [
       { name: "Whisper", logo: "openai", maker: "OpenAI", note: "Speech to text, open weights", modes: EVERY_MODE },
       { name: "Fish Speech", logo: "fishaudio", maker: "Fish Audio", note: "Natural voiceovers, open weights", modes: EVERY_MODE },
-      { name: "ElevenLabs", logo: "elevenlabs", maker: "ElevenLabs", note: "Hosted by ElevenLabs", modes: OPEN_ONLY },
+      { name: "ElevenLabs", logo: "elevenlabs", maker: "ElevenLabs", note: "Hosted by ElevenLabs", modes: EVERY_MODE, hosted: true },
     ],
   },
 ];

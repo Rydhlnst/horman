@@ -16,7 +16,7 @@ const STATS: { label: string; metric: string; sub: string; text: string }[] = [
     label: "Models",
     metric: String(MODEL_COUNT),
     sub: "In the preview lineup",
-    text: "Chat, image, video and voice. Open-weight ones run sealed; hosted ones in Open mode.",
+    text: "Chat, image, video and voice, every one in every mode. Open-weight ones use private providers.",
   },
   {
     label: "Kept in Sealed",
