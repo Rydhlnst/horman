@@ -98,9 +98,28 @@ export type Holding = {
 };
 
 /** How much $HORMAN the wallet holds, read from Solana. */
+/** Wallets treated as holders before launch, for testing (HOLDER_ALLOWLIST, comma separated). */
+function allowlisted(address: string) {
+  return (process.env.HOLDER_ALLOWLIST ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .includes(address);
+}
+
 export async function holding(address: string): Promise<Holding> {
   const ca = process.env.NEXT_PUBLIC_CA?.trim() || null;
+  if (allowlisted(address)) {
+    const read = ca && isSolanaAddress(ca) ? await readBalance(address, ca) : null;
+    return { ca: ca && isSolanaAddress(ca) ? ca : null, balance: read, holder: true };
+  }
   if (!ca || !isSolanaAddress(ca)) return { ca: null, balance: null, holder: false };
+  const balance = await readBalance(address, ca);
+  const holder = balance !== null && balance > 0 && (HOLD_MIN === null || balance >= HOLD_MIN);
+  return { ca, balance, holder };
+}
+
+async function readBalance(address: string, ca: string): Promise<number | null> {
   const rpc = process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
   try {
     const res = await fetch(rpc, {
@@ -118,12 +137,10 @@ export async function holding(address: string): Promise<Holding> {
     const json = (await res.json()) as {
       result?: { value: { account: { data: { parsed: { info: { tokenAmount: { uiAmountString: string } } } } } }[] };
     };
-    if (!json.result) return { ca, balance: null, holder: false };
-    const balance = json.result.value.reduce((sum, a) => sum + Number(a.account.data.parsed.info.tokenAmount.uiAmountString || 0), 0);
-    const holder = balance > 0 && (HOLD_MIN === null || balance >= HOLD_MIN);
-    return { ca, balance, holder };
+    if (!json.result) return null;
+    return json.result.value.reduce((sum, a) => sum + Number(a.account.data.parsed.info.tokenAmount.uiAmountString || 0), 0);
   } catch {
-    return { ca, balance: null, holder: false };
+    return null;
   }
 }
 

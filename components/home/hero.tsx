@@ -7,7 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CaButton } from "@/components/ca-button";
-import { GeneratedImage, IMAGE_INTENT, Markdown, sampleReply } from "@/components/chat/reply";
+import { GeneratedImage, IMAGE_INTENT, Markdown } from "@/components/chat/reply";
+import { ask } from "@/lib/ask";
 import { HormanMark } from "@/components/logo";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
@@ -69,23 +70,22 @@ function useTypedPlaceholder(running: boolean) {
 // What happened to an answer, per mode: good news in sage, the trade-offs in amber.
 const RECEIPT: Record<ModeKey, { text: string; ok: boolean }[]> = {
   sealed: [
-    { text: "Horman can’t read it", ok: true },
-    { text: "Nothing kept", ok: true },
-    { text: "Never trained on", ok: true },
+    { text: "Not stored by Horman", ok: true },
+    { text: "Private provider, never trained on", ok: true },
+    { text: "Enclave coming soon", ok: false },
   ],
   ephemeral: [
-    { text: "Read in memory only", ok: true },
-    { text: "Wiped after", ok: true },
+    { text: "Not stored by Horman", ok: true },
+    { text: "Not saved in this browser", ok: true },
     { text: "Never trained on", ok: true },
   ],
   open: [
     { text: "The model host reads it", ok: false },
-    { text: "Logs kept 30 days", ok: false },
-    { text: "Never trained on", ok: true },
+    { text: "Host may keep logs", ok: false },
+    { text: "Not stored by Horman", ok: true },
   ],
 };
 
-/** The privacy receipt for one answer, as a single line under it. */
 function ReceiptLine({ mode }: { mode: ModeKey }) {
   const Icon = MODE_ICON[mode];
   return (
@@ -140,7 +140,8 @@ export function Hero() {
     const answerId = uid();
     const answer: Message = isImage
       ? { id: answerId, role: "assistant", kind: "image", prompt: text, ready: false }
-      : { id: answerId, role: "assistant", kind: "text", text: sampleReply(text), shown: 0 };
+      : { id: answerId, role: "assistant", kind: "text", text: "", shown: 0 };
+    const history = [...(chat?.messages ?? []), user];
 
     setChat((c) =>
       c ? { ...c, messages: [...c.messages, user, answer] } : { id: uid(), title: text.slice(0, 60), mode, messages: [user, answer] },
@@ -159,15 +160,17 @@ export function Hero() {
       );
       return;
     }
-    const full = answer.text.length;
-    let shown = 0;
-    const tick = () => {
-      shown = still ? full : Math.min(full, shown + 4);
-      patch(answerId, (m) => ({ ...m, shown }) as Message);
-      if (shown < full) later(tick, 18);
-      else setBusy(false);
-    };
-    later(tick, still ? 0 : 450);
+    ask({
+      history,
+      tier: "Auto",
+      mode: chat?.mode ?? mode,
+      onText: (t) => patch(answerId, (m) => ({ ...m, text: t, shown: t.length }) as Message),
+    }).then(({ text: t, model, error }) => {
+      patch(answerId, (m) =>
+        error ? ({ ...m, text: error, shown: error.length, error: true, model } as Message) : ({ ...m, text: t, shown: t.length, model } as Message),
+      );
+      setBusy(false);
+    });
   };
 
   // Hand the chat to /chat, finished, so it opens there as the active conversation.
@@ -222,7 +225,7 @@ export function Hero() {
             <div className="thread-head">
               <span className="flex items-center gap-2 text-[13px] font-medium text-muted">
                 <ChatModeIcon size={14} className="text-accent" />
-                {MODES.find((m) => m.key === chat.mode)!.label} chat<span className="max-[480px]:hidden"> · sample answers</span>
+                {MODES.find((m) => m.key === chat.mode)!.label} chat<span className="max-[480px]:hidden"> · live beta</span>
               </span>
               <span className="flex items-center gap-1">
                 <button type="button" className="thread-btn icon" onClick={reset} aria-label="Start over" title="Start over">
@@ -259,16 +262,18 @@ export function Hero() {
                     <div className="flex min-w-0 flex-1 flex-col gap-3 text-[15px] leading-relaxed">
                       {m.kind === "text" ? (
                         <>
-                          {m.shown === 0 ? (
+                          {m.shown === 0 && !m.error ? (
                             <span className="thinking" aria-label="Thinking">
                               <i />
                               <i />
                               <i />
                             </span>
+                          ) : m.error ? (
+                            <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{m.text}</p>
                           ) : (
                             <Markdown text={m.text.slice(0, m.shown)} />
                           )}
-                          {m.shown >= m.text.length && <ReceiptLine mode={chat.mode} />}
+                          {m.model && !m.error && <ReceiptLine mode={chat.mode} />}
                         </>
                       ) : m.ready ? (
                         <>

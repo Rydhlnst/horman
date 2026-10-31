@@ -70,9 +70,19 @@ session cookie.
   nobody is a holder.
 - Needs `SESSION_SECRET`; see `.env.example`.
 
+## Chat (live beta)
+
+`/api/chat` streams answers from OpenRouter (`OPENROUTER_API_KEY`). Auto is free for
+everyone; every other model needs a signed-in holder wallet (or one in `HOLDER_ALLOWLIST`).
+Hosted models (GPT, Claude, Gemini) are Open mode only; Sealed and Ephemeral ask OpenRouter
+for providers that don't collect data. Sealed enclaves are not live yet, and the chat says so.
+Limits are per server instance (20 messages per 10 minutes free, 60 for holders) until a
+shared store such as Upstash is connected. `lib/models.ts` maps each tier to the newest
+matching OpenRouter model; `lib/ask.ts` is the browser side.
+
 ## Still a preview
 
-- Chat answers and images are samples; no model is wired in yet.
+- Images are samples; no image model is wired in yet.
 - Wallet payment, the early-access form and the API/SDK packages do not exist yet. Wallet sign-in works; nothing else is sent anywhere.
 - Copy still has placeholders: `[MODEL LIST]`, `[N]` and `[PRICE]`.
 

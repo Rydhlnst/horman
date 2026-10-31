@@ -3,7 +3,8 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GeneratedImage, IMAGE_INTENT, Markdown, sampleReply } from "@/components/chat/reply";
+import { GeneratedImage, IMAGE_INTENT, Markdown } from "@/components/chat/reply";
+import { ask } from "@/lib/ask";
 import { ArrowUp, ImageIcon, Lightbulb, Map as MapIcon, MessageSquare, PanelLeft, PenLine, Plus, Ticket, X } from "lucide-react";
 import { HormanMark, Wordmark } from "@/components/logo";
 import { TopupSteps, TopupVoucher } from "@/components/topup-card";
@@ -79,6 +80,7 @@ export function ChatApp() {
   const composer = useRef<HTMLTextAreaElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const aborts = useRef<AbortController[]>([]);
 
   const mode = MODES[modeIndex];
   // Holders-only models need a signed-in wallet that holds the token.
@@ -106,7 +108,9 @@ export function ChatApp() {
     const onHash = () => location.hash === "#topup" && setTopupOpen(true);
     window.addEventListener("hashchange", onHash);
     const pending = timers.current;
+    const streams = aborts.current;
     return () => {
+      streams.forEach((c) => c.abort());
       clearTimeout(boot);
       window.removeEventListener("hashchange", onHash);
       pending.forEach(clearTimeout);
@@ -156,7 +160,8 @@ export function ChatApp() {
     const answerId = uid();
     const answer: Message = isImage
       ? { id: answerId, role: "assistant", kind: "image", prompt: text, ready: false }
-      : { id: answerId, role: "assistant", kind: "text", text: sampleReply(text), shown: 0 };
+      : { id: answerId, role: "assistant", kind: "text", text: "", shown: 0 };
+    const history = [...(active && chatId ? active.messages : []), user];
 
     if (!chatId || !active) {
       chatId = uid();
@@ -179,15 +184,20 @@ export function ChatApp() {
       return;
     }
 
-    const full = answer.role === "assistant" && answer.kind === "text" ? answer.text.length : 0;
-    let shown = 0;
-    const tick = () => {
-      shown = reduce ? full : Math.min(full, shown + 5);
-      patchMessage(id, answerId, (m) => ({ ...m, shown }) as Message);
-      if (shown < full) later(tick, 18);
-      else setBusy(false);
-    };
-    tick();
+    const controller = new AbortController();
+    aborts.current.push(controller);
+    ask({
+      history,
+      tier,
+      mode: mode.key,
+      signal: controller.signal,
+      onText: (t) => patchMessage(id, answerId, (m) => ({ ...m, text: t, shown: t.length }) as Message),
+    }).then(({ text: t, model, error }) => {
+      patchMessage(id, answerId, (m) =>
+        error ? ({ ...m, text: error, shown: error.length, error: true, model } as Message) : ({ ...m, text: t, shown: t.length, model } as Message),
+      );
+      setBusy(false);
+    });
   };
 
   const newChat = () => {
@@ -325,13 +335,10 @@ export function ChatApp() {
               items={MODES.map((m) => ({ id: m.key, label: m.label }))}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <span className="pill pill-accent max-[640px]:hidden">preview</span>
-            <WalletButton />
-          </div>
+          <WalletButton />
         </div>
         <div className="bg-mist py-2 pl-[max(16px,env(safe-area-inset-left,0px))] pr-[max(16px,env(safe-area-inset-right,0px))] text-[13px] text-fg/75">
-          Website preview: replies and images are samples. The live site answers with real AI.
+          Live beta. Sealed enclaves aren’t switched on yet: until they are, Sealed and Ephemeral chats use open-weight models through providers that don’t keep or train on your data. Images are still samples.
         </div>
 
         <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
@@ -519,12 +526,18 @@ function AssistantBody({ message }: { message: Extract<Message, { role: "assista
     return (
       <>
         <div className="flex flex-col gap-3">
-          <p>Here’s a sample image. On the live site, the image model creates this for real.</p>
+          <p>Image models aren’t switched on yet, so this one is a sample.</p>
         </div>
         <GeneratedImage prompt={message.prompt} className="mt-3 max-w-[460px]" />
       </>
     );
   }
-  if (message.shown === 0) return <Pending label="Thinking…" />;
-  return <Markdown text={message.text.slice(0, message.shown)} />;
+  if (message.shown === 0 && !message.error) return <Pending label="Thinking…" />;
+  if (message.error) return <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{message.text}</p>;
+  return (
+    <>
+      <Markdown text={message.text.slice(0, message.shown)} />
+      {message.model && <p className="mt-2 text-[12px] text-faint">Answered by {message.model}</p>}
+    </>
+  );
 }
