@@ -3,8 +3,8 @@
 import "server-only";
 import { isSolanaAddress } from "@/lib/auth";
 
-const TOKEN = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
-const TOKEN_2022 = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+export const TOKEN = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+export const TOKEN_2022 = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
 const UPGRADEABLE_LOADER = "BPFLoaderUpgradeab1e11111111111111111111111";
 const SYSTEM_PROGRAM = "11111111111111111111111111111111";
 const LAMPORTS = 1_000_000_000;
@@ -20,7 +20,7 @@ export function findAddress(text: string): string | null {
   return null;
 }
 
-async function rpc<T>(method: string, params: unknown[]): Promise<T | null> {
+export async function rpc<T>(method: string, params: unknown[]): Promise<T | null> {
   const url = process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
   try {
     const res = await fetch(url, {
@@ -38,7 +38,7 @@ async function rpc<T>(method: string, params: unknown[]): Promise<T | null> {
 }
 
 type Parsed = { parsed?: { type?: string; info?: Record<string, unknown> }; program?: string };
-type AccountInfo = { value: { lamports: number; owner: string; executable: boolean; data: Parsed | unknown[] } | null };
+export type AccountInfo = { value: { lamports: number; owner: string; executable: boolean; data: Parsed | unknown[] } | null };
 
 const num = (n: number, d = 2) => n.toLocaleString("en-US", { maximumFractionDigits: d });
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
@@ -175,28 +175,38 @@ export async function mintFacts(address: string): Promise<MintFacts | null> {
   return facts ?? hit?.facts ?? null;
 }
 
-async function readMintFacts(address: string): Promise<MintFacts | null> {
-  const acct = await rpc<AccountInfo>("getAccountInfo", [address, { encoding: "jsonParsed", commitment: "confirmed" }]);
-  const v = acct?.value;
+/** A mint's facts from its jsonParsed account, without holder concentration. null if it isn't a mint. */
+export function parseMint(address: string, v: AccountInfo["value"]): MintFacts | null {
   const data = v && !Array.isArray(v.data) ? (v.data as Parsed) : undefined;
   if (!v || (v.owner !== TOKEN && v.owner !== TOKEN_2022) || data?.parsed?.type !== "mint") return null;
   const info = data.parsed.info ?? {};
   const decimals = Number(info.decimals ?? 0);
-  const supply = Number(info.supply ?? 0) / 10 ** decimals;
-  const largest = await rpc<{ value: { uiAmountString?: string }[] }>("getTokenLargestAccounts", [address, { commitment: "confirmed" }]);
-  const top = (largest?.value ?? []).slice(0, 10).map((a) => Number(a.uiAmountString ?? 0));
   const ext = (info.extensions as { extension?: string; state?: Record<string, unknown> }[] | undefined) ?? [];
   return {
     address,
     program: v.owner === TOKEN_2022 ? "Token-2022" : "SPL Token",
     decimals,
-    supply,
+    supply: Number(info.supply ?? 0) / 10 ** decimals,
     mintAuthority: (info.mintAuthority as string | null) ?? null,
     freezeAuthority: (info.freezeAuthority as string | null) ?? null,
-    top1: top.length && supply > 0 ? top[0] / supply : null,
-    top10: top.length && supply > 0 ? top.reduce((s, n) => s + n, 0) / supply : null,
+    top1: null,
+    top10: null,
     extensions: ext.map((e) => e.extension ?? "").filter(Boolean),
     extensionData: ext.filter((e) => e.extension).map((e) => ({ extension: e.extension as string, state: e.state })),
     readAt: new Date().toISOString(),
+  };
+}
+
+async function readMintFacts(address: string): Promise<MintFacts | null> {
+  const acct = await rpc<AccountInfo>("getAccountInfo", [address, { encoding: "jsonParsed", commitment: "confirmed" }]);
+  const facts = parseMint(address, acct?.value ?? null);
+  if (!facts) return null;
+  const largest = await rpc<{ value: { uiAmountString?: string }[] }>("getTokenLargestAccounts", [address, { commitment: "confirmed" }]);
+  const top = (largest?.value ?? []).slice(0, 10).map((a) => Number(a.uiAmountString ?? 0));
+  const s = facts.supply;
+  return {
+    ...facts,
+    top1: top.length && s > 0 ? top[0] / s : null,
+    top10: top.length && s > 0 ? top.reduce((sum, n) => sum + n, 0) / s : null,
   };
 }

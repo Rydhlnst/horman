@@ -1,6 +1,7 @@
 import { ArrowUpRight, Check, ShieldAlert, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { PiShieldCheckDuotone } from "react-icons/pi";
+import { CheckTabs } from "@/components/check-tabs";
 import { Head } from "@/components/head";
 import { checkToken, type Level } from "@/lib/check";
 import { isSolanaAddress } from "@/lib/auth";
@@ -41,6 +42,7 @@ export default async function CheckPage({ searchParams }: { searchParams: Promis
           }
         >
           <p>Paste any Solana token. Horman reads it from the chain and shows who can mint it, freeze it, move it or tax it. Free, no wallet needed.</p>
+          <CheckTabs active="token" />
         </Head>
       </section>
 

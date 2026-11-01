@@ -17,6 +17,7 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
       { href: "/onchain", label: "Onchain" },
       { href: "/token", label: "$HORMAN live" },
       { href: "/check", label: "Token check" },
+      { href: "/scan", label: "Wallet scan" },
       { href: "/#models", label: "Models" },
       { href: "/pricing", label: "Pricing" },
       { href: "/guides", label: "Guides" },
