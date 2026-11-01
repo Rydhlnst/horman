@@ -42,7 +42,7 @@ const MAKERS = [
 
 const CHIPS = [
   { label: "Read a wallet", prompt: "What did 7xKp…Wq3F do in the last 24 hours?", Icon: PiCubeDuotone },
-  { label: "Check a token", prompt: "Is the token at 4cWb…pump safe to hold?", Icon: PiShieldCheckDuotone },
+  { label: "Check a token", prompt: "Is this token safe to hold? EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", Icon: PiShieldCheckDuotone },
   { label: "Set up an agent", prompt: "Every Monday, brief me on what moved in my market", Icon: PiRobotDuotone },
   { label: "Make an image", prompt: "Create an image of a quiet mountain lake at sunrise, in soft sage tones", Icon: PiImageDuotone },
 ];

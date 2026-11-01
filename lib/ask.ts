@@ -2,7 +2,7 @@
 import type { Message } from "@/lib/chat";
 import type { ModeKey } from "@/lib/site";
 
-type Result = { text: string; model?: string; error?: string };
+type Result = { text: string; model?: string; error?: string; onchain?: string };
 
 export async function ask({
   history,
@@ -36,6 +36,7 @@ export async function ask({
     return { text: "", error: data.error ?? "Something went wrong. Try again." };
   }
   const model = decodeURIComponent(res.headers.get("X-Horman-Model") ?? "") || undefined;
+  const onchain = res.headers.get("X-Horman-Onchain") ?? undefined;
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let text = "";
@@ -50,5 +51,5 @@ export async function ask({
     if (!text) return { text: "", model, error: "The answer was interrupted. Try again." };
   }
   if (!text.trim()) return { text: "", model, error: "No answer came back. Try again." };
-  return { text, model };
+  return { text, model, onchain };
 }

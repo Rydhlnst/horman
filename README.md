@@ -80,6 +80,15 @@ Limits are per server instance (20 messages per 10 minutes free, 60 for holders)
 shared store such as Upstash is connected. `lib/models.ts` maps each tier to the newest
 matching OpenRouter model; `lib/ask.ts` is the browser side.
 
+## Onchain lookups in chat
+
+Paste a full Solana address into the chat and `/api/chat` reads it live before the model
+answers (`lib/solana.ts`, over `SOLANA_RPC_URL`): token mints (supply, mint and freeze
+authority, top-10 holder share, Token-2022 extensions), wallets (SOL, token balances, recent
+transactions), programs (upgrade authority) and token accounts. The facts go to the model as a
+system message, and the answer carries a "Read live from Solana" chip. The /onchain page demo
+still uses sample data.
+
 ## Still a preview
 
 - Images are samples; no image model is wired in yet.

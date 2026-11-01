@@ -193,9 +193,9 @@ export function ChatApp() {
       mode: mode.key,
       signal: controller.signal,
       onText: (t) => patchMessage(id, answerId, (m) => ({ ...m, text: t, shown: t.length }) as Message),
-    }).then(({ text: t, model, error }) => {
+    }).then(({ text: t, model, error, onchain }) => {
       patchMessage(id, answerId, (m) =>
-        error ? ({ ...m, text: error, shown: error.length, error: true, model } as Message) : ({ ...m, text: t, shown: t.length, model } as Message),
+        error ? ({ ...m, text: error, shown: error.length, error: true, model } as Message) : ({ ...m, text: t, shown: t.length, model, onchain } as Message),
       );
       setBusy(false);
     });
@@ -542,6 +542,11 @@ function AssistantBody({ message }: { message: Extract<Message, { role: "assista
   if (message.error) return <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{message.text}</p>;
   return (
     <>
+      {message.onchain && (
+        <span className="mb-2 inline-flex items-center gap-2 self-start rounded-full bg-[#cfe9dc] px-3 py-1 text-[12.5px] font-semibold text-[#0f5a40]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#14b88a]" aria-hidden="true" /> Read live from Solana · {message.onchain}
+        </span>
+      )}
       <Markdown text={message.text.slice(0, message.shown)} />
       {message.model && <p className="mt-2 text-[12px] text-faint">Answered by {message.model}</p>}
     </>

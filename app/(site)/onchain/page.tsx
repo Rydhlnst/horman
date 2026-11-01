@@ -51,9 +51,10 @@ export default function OnchainPage() {
               Ask the chain <em>in plain words.</em>
             </>
           }
-          lede="Wallets, tokens and programs on Solana, read for you and explained like a person would. Your lookups stay sealed, so nobody learns what you’re watching."
+          lede="Wallets, tokens and programs on Solana, read live and explained like a person would. Paste any address into the chat: Horman reads the chain from its own servers and keeps no record of what you looked up."
         >
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="pill pill-accent">Live in chat: paste any Solana address</span>
             <Link href="/chat" className="btn btn-ink">
               Start an onchain chat <ArrowUpRight size={16} />
             </Link>

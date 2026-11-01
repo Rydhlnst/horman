@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
 import { holding, SESSION_COOKIE, unseal } from "@/lib/auth";
 import { resolveModel, TIERS } from "@/lib/models";
+import { findAddress, readOnchain } from "@/lib/solana";
 import { MODEL_GROUPS, MODES, type ModeKey } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -32,7 +33,7 @@ const SYSTEM = [
   "You are Horman, a private AI assistant on horman.dev.",
   "Answer in the language the user writes in. Be clear, warm and to the point.",
   "Format: plain paragraphs. You may use **bold** and simple lines starting with '- ' for lists. No headings, tables or code fences unless the user asks for code.",
-  "You know Solana well. Never invent onchain data such as balances or transactions: say you can't read the chain from this chat yet.",
+  "You know Solana well. Never invent onchain data such as balances, holders or transactions. When a system message gives live Solana data, base every onchain claim on it. If the user talks about an address without giving the full address, ask them to paste it.",
 ].join(" ");
 
 const json = (status: number, error: string) => Response.json({ error }, { status });
@@ -76,6 +77,15 @@ export async function POST(req: NextRequest) {
     return json(429, "You’ve sent a lot of messages in a short time. Wait a few minutes and try again.");
   }
 
+  // A full Solana address in the newest message: read it live so the answer uses real data.
+  const address = findAddress(messages[messages.length - 1].content);
+  const onchain = address ? await readOnchain(address) : null;
+  const context = onchain
+    ? [{ role: "system" as const, content: onchain.context }]
+    : address
+      ? [{ role: "system" as const, content: `The user pasted the Solana address ${address}, but the chain couldn't be read right now. Say so and don't guess any onchain facts.` }]
+      : [];
+
   const picked = await resolveModel(tier);
   if (!picked) return json(400, "Unknown model.");
   let model = picked;
@@ -93,7 +103,7 @@ export async function POST(req: NextRequest) {
         model: id,
         stream: true,
         max_tokens: MAX_OUTPUT_TOKENS,
-        messages: [{ role: "system", content: SYSTEM }, ...messages],
+        messages: [{ role: "system", content: SYSTEM }, ...context, ...messages],
         // Outside Open, open-weight models only use providers that don't keep or train on prompts.
         // Hosted models (GPT, Claude, Gemini) are read by their lab; the chat says so.
         ...(mode === "open" || entry.hosted ? {} : { provider: { data_collection: "deny" } }),
@@ -170,6 +180,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-store",
       "X-Horman-Model": encodeURIComponent(model.name),
+      ...(onchain ? { "X-Horman-Onchain": onchain.kind } : {}),
     },
   });
 }
