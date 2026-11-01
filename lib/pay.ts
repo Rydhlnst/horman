@@ -11,7 +11,7 @@ export async function applyStatus(id: string, status: string) {
   const rec = await getPayment(id);
   if (!rec) return { rec: null, credited: false };
   let credited = false;
-  if (PAID.has(status)) credited = await creditOnce(rec.address, Math.round(rec.usd * 100), id);
+  if (PAID.has(status)) credited = await creditOnce(id, Math.round(rec.usd * 100));
   if (rec.status !== status) await savePayment(id, { ...rec, status });
   return { rec: { ...rec, status }, credited };
 }

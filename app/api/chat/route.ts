@@ -14,7 +14,7 @@ const MAX_CHARS = 8_000;
 const MAX_TOTAL = 32_000;
 const MAX_OUTPUT_TOKENS = 1_500;
 
-// Per-instance limits: a light guard until a shared store (Upstash) is connected.
+// Per-instance limits: a light guard until they move to the shared database.
 const WINDOW_MS = 10 * 60_000;
 const LIMIT_FREE = 20;
 const LIMIT_HOLDER = 60;

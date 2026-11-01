@@ -1,51 +1,97 @@
-// Server-only: a tiny Upstash Redis client over its REST API, for credit balances and
-// payments. Reads KV_REST_API_* (Vercel's Upstash integration) or UPSTASH_REDIS_REST_*.
+// Server-only: credit balances and payments in Postgres (Neon on Vercel).
+// Reads DATABASE_URL, or POSTGRES_URL as Vercel's Neon integration also sets it.
 import "server-only";
+import { Pool } from "pg";
 
-function conf() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && token ? { url, token } : null;
+const url = () => process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
+export const storeConfigured = () => url() !== "";
+
+// One small pool per server instance; serverless instances stay well under Neon's limits.
+let pool: Pool | null = null;
+let ready: Promise<void> | null = null;
+
+function db(): Pool {
+  if (!storeConfigured()) throw new Error("Store not configured");
+  pool ??= new Pool({ connectionString: url(), max: 3, idleTimeoutMillis: 10_000, connectionTimeoutMillis: 6000 });
+  return pool;
 }
 
-export const storeConfigured = () => conf() !== null;
-
-async function cmd<T>(...args: (string | number)[]): Promise<T | null> {
-  const c = conf();
-  if (!c) throw new Error("Store not configured");
-  const res = await fetch(c.url, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${c.token}`, "Content-Type": "application/json" },
-    body: JSON.stringify(args.map(String)),
-    cache: "no-store",
-    signal: AbortSignal.timeout(6000),
-  });
-  if (!res.ok) throw new Error(`Store error ${res.status}`);
-  const json = (await res.json()) as { result?: T; error?: string };
-  if (json.error) throw new Error(json.error);
-  return json.result ?? null;
+/** Creates the two tables on first use, once per instance. */
+async function q<T extends object>(text: string, params: unknown[] = []): Promise<T[]> {
+  ready ??= db()
+    .query(
+      `CREATE TABLE IF NOT EXISTS horman_credit (
+         address text PRIMARY KEY,
+         cents bigint NOT NULL DEFAULT 0
+       );
+       CREATE TABLE IF NOT EXISTS horman_payment (
+         id text PRIMARY KEY,
+         address text NOT NULL,
+         usd numeric NOT NULL,
+         status text NOT NULL,
+         pay_address text,
+         pay_amount numeric,
+         credited boolean NOT NULL DEFAULT false,
+         created_at timestamptz NOT NULL DEFAULT now()
+       );`,
+    )
+    .then(() => undefined)
+    .catch((e) => {
+      ready = null;
+      throw e;
+    });
+  await ready;
+  return (await db().query(text, params)).rows as T[];
 }
 
 /** Credit in US cents for a wallet. */
 export async function getCredit(address: string): Promise<number> {
-  return Number((await cmd<string>("GET", `credit:${address}`)) ?? 0);
+  const rows = await q<{ cents: string }>("SELECT cents FROM horman_credit WHERE address = $1", [address]);
+  return Number(rows[0]?.cents ?? 0);
 }
 
-/** Adds credit once per payment id, however many times it's called. Returns true if it credited now. */
-export async function creditOnce(address: string, cents: number, paymentId: string): Promise<boolean> {
-  const first = await cmd<string>("SET", `credited:${paymentId}`, "1", "NX");
-  if (first !== "OK") return false;
-  await cmd("INCRBY", `credit:${address}`, Math.round(cents));
-  return true;
+/**
+ * Credits a stored payment to the wallet that started it, once, however many times it's
+ * called: marking the payment and adding the credit happen in one statement.
+ * Returns true if it credited now.
+ */
+export async function creditOnce(paymentId: string, cents: number): Promise<boolean> {
+  const rows = await q(
+    `WITH p AS (
+       UPDATE horman_payment SET credited = true WHERE id = $1 AND NOT credited RETURNING address
+     )
+     INSERT INTO horman_credit (address, cents) SELECT address, $2 FROM p
+     ON CONFLICT (address) DO UPDATE SET cents = horman_credit.cents + EXCLUDED.cents
+     RETURNING cents`,
+    [paymentId, Math.round(cents)],
+  );
+  return rows.length > 0;
 }
 
 export type PaymentRecord = { address: string; usd: number; status: string; payAddress?: string; payAmount?: number; createdAt: string };
 
 export async function savePayment(id: string, rec: PaymentRecord) {
-  await cmd("SET", `payment:${id}`, JSON.stringify(rec), "EX", 60 * 60 * 24 * 30);
+  await q(
+    `INSERT INTO horman_payment (id, address, usd, status, pay_address, pay_amount, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     ON CONFLICT (id) DO UPDATE SET status = EXCLUDED.status`,
+    [id, rec.address, rec.usd, rec.status, rec.payAddress ?? null, rec.payAmount ?? null, rec.createdAt],
+  );
 }
 
 export async function getPayment(id: string): Promise<PaymentRecord | null> {
-  const raw = await cmd<string>("GET", `payment:${id}`);
-  return raw ? (JSON.parse(raw) as PaymentRecord) : null;
+  const rows = await q<{ address: string; usd: string; status: string; pay_address: string | null; pay_amount: string | null; created_at: Date }>(
+    "SELECT address, usd, status, pay_address, pay_amount, created_at FROM horman_payment WHERE id = $1",
+    [id],
+  );
+  const r = rows[0];
+  if (!r) return null;
+  return {
+    address: r.address,
+    usd: Number(r.usd),
+    status: r.status,
+    payAddress: r.pay_address ?? undefined,
+    payAmount: r.pay_amount === null ? undefined : Number(r.pay_amount),
+    createdAt: new Date(r.created_at).toISOString(),
+  };
 }
