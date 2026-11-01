@@ -12,6 +12,7 @@ import { U04Token, U04_FRAMES } from "./Update4";
 import { U05Check, U05_FRAMES } from "./Update5";
 import { U06Zcash, U06_FRAMES } from "./Update6";
 import { U07PayGo, U07_FRAMES } from "./Update7";
+import { U08Scan, U08_FRAMES } from "./Update8";
 import { Launch } from "./Launch";
 
 export function Root() {
@@ -36,6 +37,7 @@ export function Root() {
       <Composition id="U05-check" component={U05Check} durationInFrames={U05_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="U06-zcash" component={U06Zcash} durationInFrames={U06_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="U07-paygo" component={U07PayGo} durationInFrames={U07_FRAMES} fps={30} width={1080} height={1080} />
+      <Composition id="U08-scan" component={U08Scan} durationInFrames={U08_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="BurnSquare" component={Burn} durationInFrames={300} fps={30} width={1080} height={1080} />
     </>
   );
