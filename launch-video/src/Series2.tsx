@@ -417,11 +417,11 @@ export function V10Languages() {
   const f = useCurrentFrame();
   const qa = [
     ["English", "What is Solana?", "A fast blockchain with very low fees."],
-    ["Indonesia", "Apa itu Solana?", "Blockchain yang cepat dengan biaya sangat murah."],
     ["Español", "¿Qué es Solana?", "Una blockchain rápida y de muy bajo costo."],
     ["Français", "C’est quoi Solana ?", "Une blockchain rapide aux frais très bas."],
     ["Deutsch", "Was ist Solana?", "Eine schnelle Blockchain mit sehr niedrigen Gebühren."],
     ["Português", "O que é Solana?", "Uma blockchain rápida e de taxas muito baixas."],
+    ["Italiano", "Cos’è Solana?", "Una blockchain veloce con commissioni bassissime."],
   ];
   const idx = Math.min(qa.length - 1, Math.floor(f / 34));
   const lf = f - idx * 34;
