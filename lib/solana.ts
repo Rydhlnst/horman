@@ -142,3 +142,58 @@ export async function readOnchain(address: string): Promise<Onchain | null> {
   ].join("\n");
   return { address, kind, context };
 }
+
+export type MintFacts = {
+  address: string;
+  program: "SPL Token" | "Token-2022";
+  decimals: number;
+  supply: number;
+  mintAuthority: string | null;
+  freezeAuthority: string | null;
+  /** Share of supply in the largest token account and the largest ten, 0..1. */
+  top1: number | null;
+  top10: number | null;
+  extensions: string[];
+  readAt: string;
+};
+
+const factsCache = new Map<string, { at: number; facts: MintFacts }>();
+
+/**
+ * Structured facts about a token mint, read live and kept for 60 seconds per server
+ * instance so a busy page doesn't hammer the RPC. null if the chain couldn't be read
+ * or the address isn't a mint.
+ */
+export async function mintFacts(address: string): Promise<MintFacts | null> {
+  if (!isSolanaAddress(address)) return null;
+  const hit = factsCache.get(address);
+  if (hit && Date.now() - hit.at < 60_000) return hit.facts;
+  const facts = await readMintFacts(address);
+  if (facts) factsCache.set(address, { at: Date.now(), facts });
+  return facts ?? hit?.facts ?? null;
+}
+
+async function readMintFacts(address: string): Promise<MintFacts | null> {
+  const acct = await rpc<AccountInfo>("getAccountInfo", [address, { encoding: "jsonParsed", commitment: "confirmed" }]);
+  const v = acct?.value;
+  const data = v && !Array.isArray(v.data) ? (v.data as Parsed) : undefined;
+  if (!v || (v.owner !== TOKEN && v.owner !== TOKEN_2022) || data?.parsed?.type !== "mint") return null;
+  const info = data.parsed.info ?? {};
+  const decimals = Number(info.decimals ?? 0);
+  const supply = Number(info.supply ?? 0) / 10 ** decimals;
+  const largest = await rpc<{ value: { uiAmountString?: string }[] }>("getTokenLargestAccounts", [address, { commitment: "confirmed" }]);
+  const top = (largest?.value ?? []).slice(0, 10).map((a) => Number(a.uiAmountString ?? 0));
+  const ext = (info.extensions as { extension?: string }[] | undefined) ?? [];
+  return {
+    address,
+    program: v.owner === TOKEN_2022 ? "Token-2022" : "SPL Token",
+    decimals,
+    supply,
+    mintAuthority: (info.mintAuthority as string | null) ?? null,
+    freezeAuthority: (info.freezeAuthority as string | null) ?? null,
+    top1: top.length && supply > 0 ? top[0] / supply : null,
+    top10: top.length && supply > 0 ? top.reduce((s, n) => s + n, 0) / supply : null,
+    extensions: ext.map((e) => e.extension ?? "").filter(Boolean),
+    readAt: new Date().toISOString(),
+  };
+}

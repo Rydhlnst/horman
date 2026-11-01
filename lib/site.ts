@@ -67,6 +67,7 @@ export const PRODUCT_MENU: NavItem[] = [
   { href: "/#create", title: "Create", note: "Images, video, voice and music" },
   { href: "/agents", title: "Agents", note: "Briefs, wallet watches and launch radar" },
   { href: "/onchain", title: "Onchain", note: "Solana wallets, tokens and programs, explained" },
+  { href: "/token", title: "$HORMAN", note: "The token, read live from Solana" },
   { href: "/#modes", title: "Privacy modes", note: "Sealed, Ephemeral and Open" },
 ];
 

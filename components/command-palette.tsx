@@ -31,6 +31,7 @@ const PAGES: Entry[] = [
   { group: "Pages", label: "Home", hint: "Ask anything, keep it private", href: "/", Icon: PiHouseDuotone },
   { group: "Pages", label: "Chat", hint: "Open the private chat", href: "/chat", Icon: PiChatTeardropTextDuotone },
   { group: "Pages", label: "Guides", hint: "Tutorials and how-it-works videos", href: "/guides", Icon: PiPlayCircleDuotone },
+  { group: "Pages", label: "$HORMAN", hint: "The token, read live from Solana", href: "/token", Icon: PiCubeDuotone },
   { group: "Pages", label: "Onchain", hint: "Solana wallets, tokens and programs, explained", href: "/onchain", Icon: PiCubeDuotone },
   { group: "Pages", label: "Agents", hint: "Briefs, wallet watches and launch radar", href: "/agents", Icon: PiRobotDuotone },
   { group: "Pages", label: "Models", hint: "Every model and the modes it runs in", href: "/#models", Icon: PiCpuDuotone },
