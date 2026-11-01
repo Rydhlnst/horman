@@ -1,26 +1,26 @@
 "use client";
 
-import { ArrowUpRight, LockKeyhole, MessageSquare, Ticket, Wallet } from "lucide-react";
+import { ArrowUpRight, LockKeyhole, Ticket, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
-import { SiSolana } from "react-icons/si";
-import { TOPUP_MAX, TOPUP_MIN, TOPUP_PRESETS, TOPUP_TOKENS, type TopupToken } from "@/lib/site";
+import { SiSolana, SiZcash } from "react-icons/si";
+import { TOPUP_LIVE, TOPUP_MAX, TOPUP_MIN, TOPUP_PRESETS, TOPUP_TOKENS, type TopupToken } from "@/lib/site";
 
 const STEPS = [
   {
-    Icon: MessageSquare,
-    title: "Open it from the chat",
-    text: "Top up in the chat opens the payment for the chat in this browser.",
+    Icon: Wallet,
+    title: "Connect your wallet",
+    text: "Sign in with your Solana wallet in the chat, so the credit has a home. No card, no billing address.",
   },
   {
-    Icon: Wallet,
-    title: "Pay from your wallet",
-    text: "Send USDC on Solana from Phantom, Solflare or Backpack. No card, no billing address.",
+    Icon: SiZcash,
+    title: "Pay with Zcash",
+    text: "Send the exact ZEC amount shown. Payments run through NOWPayments. USDC on Solana opens soon.",
   },
   {
     Icon: Ticket,
-    title: "Credit lands as private vouchers",
-    text: "Your browser turns the payment into vouchers, one for each $1, so a payment never links to your chats.",
+    title: "Credit lands on your wallet",
+    text: "Once the payment confirms, the credit shows up in the chat, tied to the wallet you signed in with.",
   },
 ];
 
@@ -49,11 +49,13 @@ export function TopupSteps({ compact = false }: { compact?: boolean }) {
 
 /**
  * The amount picker, shaped like a voucher. On the Top up page the button sends you
- * to the chat (vouchers live in the chat's browser storage); inside the chat it pays.
+ * to the chat, where you're signed in; inside the chat it starts the payment.
  */
-export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupToken) => void }) {
+export function TopupVoucher({ onPay, zecOpen = true }: { onPay?: (amount: number, token: TopupToken) => void; zecOpen?: boolean }) {
   const labelId = useId();
-  const token: TopupToken = TOPUP_TOKENS[0];
+  const [token, setToken] = useState<TopupToken>(TOPUP_TOKENS[0]);
+  const isLive = (t: TopupToken) => TOPUP_LIVE[t] && (t !== "ZEC" || zecOpen);
+  const live = isLive(token);
   const [amount, setAmount] = useState(10);
   const [preset, setPreset] = useState<number | null>(10);
   const [custom, setCustom] = useState("");
@@ -85,14 +87,12 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
 
   return (
     <div className="folder tone-night mt-0">
-      <span className="folder-tab">Voucher · Solana</span>
+      <span className="folder-tab">Top up</span>
       <div className="flex items-end justify-between gap-4 border-b-2 border-dashed border-white/15 p-7 max-[480px]:p-5">
         <div className="flex flex-col gap-1">
           <span className="label !text-night-muted">You get</span>
           <span className="font-display text-[64px] font-extrabold leading-[0.9] tracking-[-0.05em] tabular-nums">${amount}</span>
-          <span className="text-sm text-night-muted">
-            {amount} private voucher{amount === 1 ? "" : "s"}
-          </span>
+          <span className="text-sm text-night-muted">of credit, paid in {token}</span>
         </div>
         <Ticket size={44} className="mb-2 text-pale" strokeWidth={1.5} />
       </div>
@@ -101,19 +101,34 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
         <div className="flex items-center justify-between gap-4">
           <dt className="text-night-muted">Network</dt>
           <dd className="flex items-center gap-2.5 font-medium">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[linear-gradient(135deg,#9945FF,#14F195)] text-white" aria-hidden="true">
-              <SiSolana size={14} />
-            </span>
-            Solana
+            {token === "ZEC" ? (
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4B728] text-black" aria-hidden="true">
+                <SiZcash size={15} />
+              </span>
+            ) : (
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[linear-gradient(135deg,#9945FF,#14F195)] text-white" aria-hidden="true">
+                <SiSolana size={14} />
+              </span>
+            )}
+            {token === "ZEC" ? "Zcash" : "Solana"}
           </dd>
         </div>
         <div className="flex items-center justify-between gap-4">
           <dt className="text-night-muted">Token</dt>
-          <dd className="flex items-center gap-2.5 font-medium">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2775CA] text-[13px] font-bold text-white" aria-hidden="true">
-              $
-            </span>
-            {token}
+          <dd className="flex gap-1.5 rounded-[12px] bg-night-2 p-1" role="radiogroup" aria-label="Token">
+            {TOPUP_TOKENS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                role="radio"
+                aria-checked={token === t}
+                onClick={() => setToken(t)}
+                className={`flex items-center gap-1.5 rounded-[9px] px-3 py-1.5 text-[14px] font-semibold transition ${token === t ? "bg-pale text-night" : "text-white hover:bg-[#2f3d35]"}`}
+              >
+                {t}
+                {!isLive(t) && <span className="text-[11px] font-medium opacity-70">soon</span>}
+              </button>
+            ))}
           </dd>
         </div>
         <div className="flex flex-col gap-3">
@@ -154,9 +169,14 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
 
       <div className="flex flex-col gap-4 px-7 pb-7 max-[480px]:px-5 max-[480px]:pb-5">
         {onPay ? (
-          <button type="button" className="btn w-full border-pale !bg-none bg-pale text-night hover:border-white hover:bg-white" onClick={() => onPay(amount, token)}>
+          <button
+            type="button"
+            disabled={!live}
+            className="btn w-full border-pale !bg-none bg-pale text-night hover:border-white hover:bg-white disabled:opacity-50"
+            onClick={() => onPay(amount, token)}
+          >
             <Wallet size={18} />
-            Pay ${amount} in {token}
+            {live ? `Pay $${amount} in ${token}` : `${token} opens soon`}
           </button>
         ) : (
           <Link className="btn w-full border-pale !bg-none bg-pale text-night hover:border-white hover:bg-white" href="/chat#topup">
@@ -165,7 +185,9 @@ export function TopupVoucher({ onPay }: { onPay?: (amount: number, token: TopupT
         )}
         <p className="flex gap-2.5 text-[13px] text-night-muted">
           <LockKeyhole size={15} className="mt-0.5 flex-none" />
-          Vouchers are made in your browser, so Horman never sees which payment paid for which chat.
+          {token === "ZEC"
+            ? "Paid through NOWPayments to a transparent ZEC address. The credit is tied to your signed-in wallet, never to what you ask."
+            : "USDC on Solana opens soon."}
         </p>
       </div>
     </div>

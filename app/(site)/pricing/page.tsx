@@ -22,8 +22,8 @@ const FREE = ["Auto, which answers with a light open model", FREE_LIMIT, "[N] im
 const HOLDER = [
   `Hold ${HOLD} in your wallet to unlock every model`,
   "Pick any model, in every mode it runs in",
-  "Pay per use with credit: top-ups of $1 to $200 in USDC on Solana",
-  "Paid with private vouchers that never link to your chats",
+  "Pay per use with credit: top-ups of $1 to $200",
+  "Pay in ZEC today, USDC on Solana soon. No card needed",
 ];
 
 const PRICES = [
@@ -104,7 +104,7 @@ export default function PricingPage() {
           <div className="relative flex flex-col items-center justify-center gap-3 border-l-2 border-dashed border-white/15 p-6 text-center max-[560px]:border-l-0 max-[560px]:border-t-2">
             <Ticket size={28} className="text-pale" />
             <span className="font-display text-[44px] font-extrabold leading-none">$1</span>
-            <span className="label !text-night-muted">= 1 private voucher</span>
+            <span className="label !text-night-muted">= $1 of credit</span>
           </div>
         </div>
       </Reveal>

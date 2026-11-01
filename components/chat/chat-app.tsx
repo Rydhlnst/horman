@@ -8,6 +8,7 @@ import { ask, createImage } from "@/lib/ask";
 import { ArrowUp, ImageIcon, Lightbulb, Map as MapIcon, MessageSquare, PanelLeft, PenLine, Plus, Ticket, X } from "lucide-react";
 import { HormanMark, Wordmark } from "@/components/logo";
 import { TopupSteps, TopupVoucher } from "@/components/topup-card";
+import { ZecCheckout } from "@/components/zec-checkout";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { HANDOFF, STORE, uid, type Chat, type Message } from "@/lib/chat";
@@ -75,6 +76,8 @@ export function ChatApp() {
   const [listOpen, setListOpen] = useState(false);
   const [topupOpen, setTopupOpen] = useState(false);
   const [payNote, setPayNote] = useState("");
+  const [checkout, setCheckout] = useState<number | null>(null);
+  const [credit, setCredit] = useState<{ balance: number | null; zec: boolean }>({ balance: null, zec: false });
   const [loaded, setLoaded] = useState(false);
 
   const composer = useRef<HTMLTextAreaElement>(null);
@@ -86,6 +89,18 @@ export function ChatApp() {
   // Holders-only models need a signed-in wallet that holds the token.
   const { session } = useWalletSession();
   const chosen = CHAT_MODELS.find((m) => m.name === tier);
+  // Credit is tied to the signed-in wallet; refresh it whenever that changes.
+  useEffect(() => {
+    let off = false;
+    fetch("/api/credit", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d: { balance: number | null; zec: boolean }) => !off && setCredit({ balance: d.balance ?? null, zec: !!d.zec }))
+      .catch(() => {});
+    return () => {
+      off = true;
+    };
+  }, [session?.address]);
+  const onPaid = useCallback((balance: number) => setCredit((c) => ({ ...c, balance })), []);
   const imageLocked = tool === "image" && !session?.holder;
   const locked = (tool === "chat" && !chosen?.free && !session?.holder) || imageLocked;
   const active = chats.find((c) => c.id === activeId) ?? null;
@@ -131,6 +146,7 @@ export function ChatApp() {
   const closeTopup = useCallback(() => {
     setTopupOpen(false);
     setPayNote("");
+    setCheckout(null);
     if (location.hash === "#topup") history.replaceState(null, "", location.pathname + location.search);
   }, []);
 
@@ -259,7 +275,7 @@ export function ChatApp() {
             <Ticket size={20} className="text-pale" strokeWidth={1.6} />
             <span className="flex flex-col">
               <span className="label !text-night-muted">Credit</span>
-              <span className="font-mono text-[15px] font-medium tabular-nums">$0.00</span>
+              <span className="font-mono text-[15px] font-medium tabular-nums">${(credit.balance ?? 0).toFixed(2)}</span>
             </span>
           </span>
           <button
@@ -301,7 +317,19 @@ export function ChatApp() {
             </div>
             <div className="mt-9 grid gap-12">
               <TopupSteps compact />
-              <TopupVoucher onPay={(amount, token) => setPayNote(`Wallet payments open at launch. You picked $${amount} in ${token}.`)} />
+              {checkout !== null ? (
+                <ZecCheckout amount={checkout} onBack={() => setCheckout(null)} onPaid={onPaid} />
+              ) : (
+                <TopupVoucher
+                  zecOpen={credit.zec}
+                  onPay={(amount, token) => {
+                    if (token !== "ZEC" || !credit.zec) return setPayNote(`${token} top-ups open soon.`);
+                    if (!session?.address) return setPayNote("Connect your wallet first, so the credit has somewhere to land.");
+                    setPayNote("");
+                    setCheckout(amount);
+                  }}
+                />
+              )}
             </div>
             {payNote && (
               <p aria-live="polite" className="rounded-xl bg-surface px-4 py-3 text-sm text-muted">

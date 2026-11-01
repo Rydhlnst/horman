@@ -5,8 +5,10 @@ import { ProductVideo } from "@/components/product-video";
 import { Reveal } from "@/components/motion/reveal";
 import Link from "next/link";
 import { TopupSteps, TopupVoucher } from "@/components/topup-card";
+import { zecPaymentsOn } from "@/lib/pay";
 
 export const metadata: Metadata = { title: "Top up credit" };
+export const dynamic = "force-dynamic";
 
 export default function TopupPage() {
   return (
@@ -18,7 +20,7 @@ export default function TopupPage() {
           kicker="Top up"
           title={
             <>
-              Credit that never <em>points back to you.</em>
+              Top up with <em>Zcash.</em>
             </>
           }
         >
@@ -27,13 +29,13 @@ export default function TopupPage() {
             <Link className="text-accent underline underline-offset-2" href="/pricing">
               Pricing
             </Link>
-            . Each dollar becomes a private voucher made in your browser.
+            . Pay in ZEC, no card and no billing address. The credit lands on the Solana wallet you sign in with.
           </p>
         </Head>
       </section>
       <Reveal className="wrap mt-20 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start gap-5 max-[900px]:grid-cols-1 max-[900px]:gap-14">
         <TopupSteps />
-        <TopupVoucher />
+        <TopupVoucher zecOpen={zecPaymentsOn()} />
       </Reveal>
 
       <section className="section">
@@ -44,7 +46,7 @@ export default function TopupPage() {
               A top-up, <em>start to finish.</em>
             </>
           }
-          lede="Pick an amount, pay in USDC on Solana, and watch it land as private vouchers."
+          lede="Pick an amount, pay it, and watch the credit land. The video uses sample data."
         />
         <Reveal className="folder tone-paper lined video-tabs">
           <span className="folder-tab">Video · sample data</span>

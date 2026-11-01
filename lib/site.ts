@@ -82,8 +82,9 @@ export const DEV_MENU: NavItem[] = [
 export const TOPUP_MIN = 1;
 export const TOPUP_MAX = 200;
 export const TOPUP_PRESETS = [1, 5, 10, 25];
-/** Top-ups are paid in USDC on Solana. */
-export const TOPUP_TOKENS = ["USDC"] as const;
+/** Top-up tokens: ZEC through NOWPayments now, USDC on Solana next. */
+export const TOPUP_TOKENS = ["ZEC", "USDC"] as const;
+export const TOPUP_LIVE: Record<(typeof TOPUP_TOKENS)[number], boolean> = { ZEC: true, USDC: false };
 export type TopupToken = (typeof TOPUP_TOKENS)[number];
 
 /** What unlocks every model: holding $HORMAN. The amount is still a placeholder. */
