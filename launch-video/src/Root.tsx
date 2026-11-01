@@ -9,6 +9,7 @@ import { U01EveryMode, U01_FRAMES } from "./Update1";
 import { U02Onchain, U02_FRAMES } from "./Update2";
 import { U03Images, U03_FRAMES } from "./Update3";
 import { U04Token, U04_FRAMES } from "./Update4";
+import { U05Check, U05_FRAMES } from "./Update5";
 import { Launch } from "./Launch";
 
 export function Root() {
@@ -30,6 +31,7 @@ export function Root() {
       <Composition id="U02-onchain" component={U02Onchain} durationInFrames={U02_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="U03-images" component={U03Images} durationInFrames={U03_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="U04-token" component={U04Token} durationInFrames={U04_FRAMES} fps={30} width={1080} height={1080} />
+      <Composition id="U05-check" component={U05Check} durationInFrames={U05_FRAMES} fps={30} width={1080} height={1080} />
       <Composition id="BurnSquare" component={Burn} durationInFrames={300} fps={30} width={1080} height={1080} />
     </>
   );
