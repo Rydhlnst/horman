@@ -33,7 +33,9 @@ async function q<T extends object>(text: string, params: unknown[] = []): Promis
          pay_amount numeric,
          credited boolean NOT NULL DEFAULT false,
          created_at timestamptz NOT NULL DEFAULT now()
-       );`,
+       );
+       -- Usage is charged in fractions of a cent.
+       ALTER TABLE horman_credit ALTER COLUMN cents TYPE numeric(20,6);`,
     )
     .then(() => undefined)
     .catch((e) => {
@@ -44,7 +46,7 @@ async function q<T extends object>(text: string, params: unknown[] = []): Promis
   return (await db().query(text, params)).rows as T[];
 }
 
-/** Credit in US cents for a wallet. */
+/** Credit in US cents for a wallet, with fractions of a cent. */
 export async function getCredit(address: string): Promise<number> {
   const rows = await q<{ cents: string }>("SELECT cents FROM horman_credit WHERE address = $1", [address]);
   return Number(rows[0]?.cents ?? 0);
@@ -66,6 +68,15 @@ export async function creditOnce(paymentId: string, cents: number): Promise<bool
     [paymentId, Math.round(cents)],
   );
   return rows.length > 0;
+}
+
+/** Takes usage off a wallet's credit, never below zero. Returns the new balance in cents. */
+export async function debit(address: string, cents: number): Promise<number> {
+  const rows = await q<{ cents: string }>(
+    "UPDATE horman_credit SET cents = GREATEST(cents - $2, 0) WHERE address = $1 RETURNING cents",
+    [address, Math.max(0, cents).toFixed(6)],
+  );
+  return Number(rows[0]?.cents ?? 0);
 }
 
 export type PaymentRecord = { address: string; usd: number; status: string; payAddress?: string; payAmount?: number; createdAt: string };

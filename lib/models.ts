@@ -18,7 +18,9 @@ export const TIERS: Record<string, Tier> = {
   Gemini: { patterns: [/^google\/gemini-\d+(\.\d+)?-pro$/, /^google\/gemini-\d+(\.\d+)?-pro/, /^google\/gemini-\d+(\.\d+)?-flash$/], fallback: "google/gemini-2.5-pro" },
 };
 
-type Listed = { id: string; name?: string; created?: number; architecture?: { output_modalities?: string[] } };
+type Listed = { id: string; name?: string; created?: number; architecture?: { output_modalities?: string[] }; pricing?: Pricing };
+/** OpenRouter prices in US dollars, per token or per image, as strings. */
+export type Pricing = { prompt?: string; completion?: string; image?: string; request?: string };
 let cache: { at: number; models: Listed[] } | null = null;
 
 async function liveModels(): Promise<Listed[] | null> {
@@ -34,6 +36,11 @@ async function liveModels(): Promise<Listed[] | null> {
   } catch {
     return cache?.models ?? null;
   }
+}
+
+/** A model's listed prices, for estimating a charge when OpenRouter doesn't report the cost. */
+export async function modelPricing(id: string): Promise<Pricing | null> {
+  return (await liveModels())?.find((m) => m.id === id)?.pricing ?? null;
 }
 
 /** The OpenRouter id and display name for a tier, newest match first. */

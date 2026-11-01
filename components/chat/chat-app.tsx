@@ -12,7 +12,7 @@ import { ZecCheckout } from "@/components/zec-checkout";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
 import { HANDOFF, STORE, uid, type Chat, type Message } from "@/lib/chat";
-import { HOLD, MODEL_GROUPS, MODES, TICKER } from "@/lib/site";
+import { MODEL_GROUPS, MODES, TICKER } from "@/lib/site";
 import { WalletButton } from "@/components/wallet/wallet-button";
 import { useWalletSession } from "@/components/wallet/wallet-session";
 
@@ -89,8 +89,9 @@ export function ChatApp() {
   // Holders-only models need a signed-in wallet that holds the token.
   const { session } = useWalletSession();
   const chosen = CHAT_MODELS.find((m) => m.name === tier);
-  // Credit is tied to the signed-in wallet; refresh it whenever that changes.
+  // Credit is tied to the signed-in wallet; refresh it when that changes and after each answer.
   useEffect(() => {
+    if (busy) return;
     let off = false;
     fetch("/api/credit", { cache: "no-store" })
       .then((r) => r.json())
@@ -99,10 +100,13 @@ export function ChatApp() {
     return () => {
       off = true;
     };
-  }, [session?.address]);
+  }, [session?.address, busy]);
   const onPaid = useCallback((balance: number) => setCredit((c) => ({ ...c, balance })), []);
-  const imageLocked = tool === "image" && !session?.holder;
-  const locked = (tool === "chat" && !chosen?.free && !session?.holder) || imageLocked;
+  // Holders use every model; anyone else with credit pays as they go.
+  const canPay = !!session?.address && (credit.balance ?? 0) >= 0.05;
+  const payGo = !session?.holder && canPay;
+  const imageLocked = tool === "image" && !session?.holder && !canPay;
+  const locked = (tool === "chat" && !chosen?.free && !session?.holder && !canPay) || imageLocked;
   const active = chats.find((c) => c.id === activeId) ?? null;
   const messages = useMemo(() => active?.messages ?? [], [active]);
 
@@ -498,7 +502,7 @@ export function ChatApp() {
                     >
                       {CHAT_MODELS.map((m) => (
                         <option key={m.name} value={m.name}>
-                          {m.free ? `${m.name} · free` : `${m.name} · holders`}
+                          {m.free ? `${m.name} · free` : payGo ? `${m.name} · pay as you go` : `${m.name} · holders`}
                         </option>
                       ))}
                     </select>
@@ -519,13 +523,16 @@ export function ChatApp() {
             <p className="mx-auto mt-2 flex max-w-[780px] flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] text-muted" role="status">
               {imageLocked
                 ? !session?.address
-                  ? `Image creation is for holders: connect a wallet that holds ${HOLD}.`
-                  : `Image creation is for holders: this wallet needs ${HOLD}.`
+                  ? `Image creation is for holders or pay as you go: connect your wallet.`
+                  : `Image creation needs ${TICKER} or credit.`
                 : !session?.address
-                  ? `${tier} is for holders: connect a wallet that holds ${HOLD} to pick it.`
-                  : !session.ca
-                    ? `${tier} opens to holders when ${TICKER} launches.`
-                    : `${tier} is for holders: this wallet needs ${HOLD}.`}
+                  ? `${tier} is for holders or pay as you go: connect your wallet to pick it.`
+                  : `${tier} needs ${TICKER} or credit.`}
+              {session?.address && (
+                <button type="button" className="font-semibold text-accent underline underline-offset-2" onClick={() => setTopupOpen(true)}>
+                  Top up from $1
+                </button>
+              )}
               <button
                 type="button"
                 className="font-semibold text-accent underline underline-offset-2"
@@ -533,6 +540,11 @@ export function ChatApp() {
               >
                 {imageLocked ? "Back to chat, free" : "Use Auto, free"}
               </button>
+            </p>
+          )}
+          {!locked && payGo && (tool === "image" || !chosen?.free) && (
+            <p className="mx-auto mt-2 max-w-[780px] text-center text-[13px] text-muted" role="status">
+              Pay as you go: each {tool === "image" ? "image" : "answer"} takes what the model costs, plus a small fee, from your credit.
             </p>
           )}
           {tool === "image" && !locked && mode.key !== "open" && (

@@ -23,7 +23,7 @@ const FAQ: SplitItem[] = [
   {
     Icon: PiKeyDuotone,
     q: "Do I need to hold a token?",
-    a: `Not to start. Without a token you get Auto for free, up to ${FREE_LIMIT}. Hold ${HOLD} in your wallet to unlock every model; use is then paid with credit, from $1.`,
+    a: `Not to start. Without a token you get Auto for free, up to ${FREE_LIMIT}. Hold ${HOLD} to unlock every model, or top up credit from $1 in ZEC and pay as you go.`,
   },
   {
     Icon: PiCurrencyBtcDuotone,

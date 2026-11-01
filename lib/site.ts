@@ -93,12 +93,12 @@ export const TICKER = "$HORMAN";
 export const X_URL = "https://x.com/hormandotdev";
 /** The $HORMAN mint (CA) on Solana. NEXT_PUBLIC_CA overrides it. */
 export const CA_ADDRESS = "6W4SEuy1DEHbPKrRJNHyoAHYJ63M3JQadgAhHUv8pump";
-export const HOLD = `[N] ${TICKER}`;
-/** The $HORMAN a wallet needs for every model. null until the amount is set: then any balance counts. */
+/** The $HORMAN a wallet needs for every model. null: any balance counts. */
 export const HOLD_MIN: number | null = null;
+export const HOLD = HOLD_MIN === null ? `any amount of ${TICKER}` : `${Number(HOLD_MIN).toLocaleString("en-US")} ${TICKER}`;
 
 /** Free access (no token held) gets the free tier only, which is Auto. Holders can pick any model. */
-export const FREE_LIMIT = "[N] chats a day";
+export const FREE_LIMIT = "20 messages every 10 minutes";
 
 /**
  * `logo` is a file in /public/models (LobeHub Icons, MIT); Auto uses the Horman mark.

@@ -1,5 +1,6 @@
 import { type NextRequest } from "next/server";
 import { holding, SESSION_COOKIE, unseal } from "@/lib/auth";
+import { chargeCents, creditCents, MIN_CENTS, settle } from "@/lib/billing";
 import { resolveModel, TIERS } from "@/lib/models";
 import { findAddress, readOnchain } from "@/lib/solana";
 import { MODEL_GROUPS, MODES, type ModeKey } from "@/lib/site";
@@ -65,15 +66,20 @@ export async function POST(req: NextRequest) {
   if (!messages.length) return json(400, "That message is too long.");
 
   const session = unseal<{ address: string }>(req.cookies.get(SESSION_COOKIE)?.value);
+  // Holders use every model as before. Anyone else with credit pays as they go.
   let holder = false;
+  let paid = false;
   if (!entry.free) {
-    if (!session) return json(403, `${tier} is for $HORMAN holders. Connect your wallet first.`);
+    if (!session) return json(403, `${tier} is for $HORMAN holders or pay as you go with credit. Connect your wallet first.`);
     holder = (await holding(session.address)).holder;
-    if (!holder) return json(403, `${tier} is for $HORMAN holders, and this wallet doesn’t qualify yet. Auto is free for everyone.`);
+    if (!holder) {
+      paid = (await creditCents(session.address)) >= MIN_CENTS;
+      if (!paid) return json(402, `${tier} needs $HORMAN or credit. Top up from $1 in ZEC, or use Auto for free.`);
+    }
   }
 
   const who = session?.address ?? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anon";
-  if (!allow(who, holder ? LIMIT_HOLDER : LIMIT_FREE)) {
+  if (!allow(who, holder || paid ? LIMIT_HOLDER : LIMIT_FREE)) {
     return json(429, "You’ve sent a lot of messages in a short time. Wait a few minutes and try again.");
   }
 
@@ -103,6 +109,8 @@ export async function POST(req: NextRequest) {
         model: id,
         stream: true,
         max_tokens: MAX_OUTPUT_TOKENS,
+        // Reports what the request cost, so pay-as-you-go charges the real price.
+        usage: { include: true },
         messages: [{ role: "system", content: SYSTEM }, ...context, ...messages],
         // Outside Open, open-weight models only use providers that don't keep or train on prompts.
         // Hosted models (GPT, Claude, Gemini) are read by their lab; the chat says so.
@@ -132,6 +140,17 @@ export async function POST(req: NextRequest) {
     return json(502, msg);
   }
 
+  // Pay as you go: charge once, when the answer ends or the reader leaves.
+  const promptChars = [SYSTEM, ...context.map((c) => c.content), ...messages.map((m) => m.content)].join("").length;
+  let usage: { cost?: number; prompt_tokens?: number; completion_tokens?: number } | null = null;
+  let outputChars = 0;
+  let charged = false;
+  const charge = async () => {
+    if (!paid || charged || !session) return;
+    charged = true;
+    await settle(session.address, await chargeCents(model.id, usage, { promptChars, outputChars }));
+  };
+
   // Turn OpenRouter's server-sent events into a plain stream of text.
   const reader = upstream.body.getReader();
   const decoder = new TextDecoder();
@@ -152,14 +171,18 @@ export async function POST(req: NextRequest) {
             const data = line.slice(5).trim();
             if (data === "[DONE]") continue;
             try {
-              const evt = JSON.parse(data) as { choices?: { delta?: { content?: string } }[]; error?: { message?: string } };
+              const evt = JSON.parse(data) as { choices?: { delta?: { content?: string } }[]; error?: { message?: string }; usage?: typeof usage };
+              if (evt.usage) usage = evt.usage;
               if (evt.error) {
                 console.error("openrouter stream error", model.id, evt.error.message);
                 controller.enqueue(encoder.encode("\n\n(The answer was cut short. Try again.)"));
                 continue;
               }
               const piece = evt.choices?.[0]?.delta?.content;
-              if (piece) controller.enqueue(encoder.encode(piece));
+              if (piece) {
+                outputChars += piece.length;
+                controller.enqueue(encoder.encode(piece));
+              }
             } catch {
               /* keep-alive or partial line */
             }
@@ -168,10 +191,12 @@ export async function POST(req: NextRequest) {
       } catch {
         /* client went away */
       }
+      await charge();
       controller.close();
     },
     cancel() {
       reader.cancel().catch(() => {});
+      void charge();
     },
   });
 
@@ -180,6 +205,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-store",
       "X-Horman-Model": encodeURIComponent(model.name),
+      ...(paid ? { "X-Horman-Paid": "1" } : {}),
       ...(onchain ? { "X-Horman-Onchain": onchain.kind } : {}),
     },
   });
