@@ -154,6 +154,8 @@ export type MintFacts = {
   top1: number | null;
   top10: number | null;
   extensions: string[];
+  /** Token-2022 extensions with their state, for the safety checks. */
+  extensionData: { extension: string; state?: Record<string, unknown> }[];
   readAt: string;
 };
 
@@ -183,7 +185,7 @@ async function readMintFacts(address: string): Promise<MintFacts | null> {
   const supply = Number(info.supply ?? 0) / 10 ** decimals;
   const largest = await rpc<{ value: { uiAmountString?: string }[] }>("getTokenLargestAccounts", [address, { commitment: "confirmed" }]);
   const top = (largest?.value ?? []).slice(0, 10).map((a) => Number(a.uiAmountString ?? 0));
-  const ext = (info.extensions as { extension?: string }[] | undefined) ?? [];
+  const ext = (info.extensions as { extension?: string; state?: Record<string, unknown> }[] | undefined) ?? [];
   return {
     address,
     program: v.owner === TOKEN_2022 ? "Token-2022" : "SPL Token",
@@ -194,6 +196,7 @@ async function readMintFacts(address: string): Promise<MintFacts | null> {
     top1: top.length && supply > 0 ? top[0] / supply : null,
     top10: top.length && supply > 0 ? top.reduce((s, n) => s + n, 0) / supply : null,
     extensions: ext.map((e) => e.extension ?? "").filter(Boolean),
+    extensionData: ext.filter((e) => e.extension).map((e) => ({ extension: e.extension as string, state: e.state })),
     readAt: new Date().toISOString(),
   };
 }

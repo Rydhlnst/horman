@@ -127,11 +127,16 @@ export default async function TokenPage() {
               Check any token <em>the same way.</em>
             </>
           }
-          lede="Paste a Solana address into the Horman chat and get the same live facts, explained in plain words."
+          lede="Run any Solana token through the free Token check, or paste it into the Horman chat for the same live facts in plain words."
         >
-          <a href="/chat" className="btn btn-ink">
-            Open the chat <ArrowUpRight size={16} />
-          </a>
+          <div className="flex flex-wrap gap-2.5">
+            <a href="/check" className="btn btn-ink">
+              Open Token check <ArrowUpRight size={16} />
+            </a>
+            <a href="/chat" className="btn">
+              Open the chat <ArrowUpRight size={16} />
+            </a>
+          </div>
         </Head>
       </section>
     </main>

@@ -64,6 +64,7 @@ const LINKS = [
   { href: "/agents", label: "Agents" },
   { href: "/onchain", label: "Onchain" },
   { href: "/token", label: "$HORMAN" },
+  { href: "/check", label: "Token check" },
   { href: "/pricing", label: "Pricing" },
 ];
 
