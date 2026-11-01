@@ -131,6 +131,7 @@ export const MODEL_GROUPS: ModelGroup[] = [
     id: "image",
     label: "Image",
     models: [
+      { name: "Gemini Image", logo: "gemini-color", maker: "Google", note: "Live now in the chat", modes: EVERY_MODE, hosted: true },
       { name: "FLUX", logo: "flux", maker: "Black Forest Labs", note: "Photoreal and illustration", modes: EVERY_MODE },
       { name: "Stable Diffusion", logo: "stability-color", maker: "Stability AI", note: "Styles, edits and inpainting", modes: EVERY_MODE },
       { name: "Imagen", logo: "google-color", maker: "Google", note: "Hosted by Google", modes: EVERY_MODE, hosted: true },

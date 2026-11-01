@@ -89,9 +89,15 @@ transactions), programs (upgrade authority) and token accounts. The facts go to 
 system message, and the answer carries a "Read live from Solana" chip. The /onchain page demo
 still uses sample data.
 
+## Images in chat
+
+Holders can create images: `/api/image` sends the prompt to the newest image-output model on
+OpenRouter (`resolveImageModel` in `lib/models.ts`, preferring Google's Gemini image models)
+with `modalities: ["image", "text"]` and returns the picture as a data URL. Limit: 10 per
+10 minutes per wallet. Outside Open mode the chat notes that Google reads the prompt.
+
 ## Still a preview
 
-- Images are samples; no image model is wired in yet.
 - Wallet payment, the early-access form and the API/SDK packages do not exist yet. Wallet sign-in works; nothing else is sent anywhere.
 - Copy still has placeholders: `[MODEL LIST]`, `[N]` and `[PRICE]`.
 

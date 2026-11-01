@@ -180,7 +180,16 @@ export function SampleImage({ prompt }: { prompt: string }) {
 }
 
 /** A generated image in its frame, with a small caption over the corner. */
-export function GeneratedImage({ prompt, className = "" }: { prompt: string; className?: string }) {
+export function GeneratedImage({ prompt, src, model, className = "" }: { prompt: string; src?: string; model?: string; className?: string }) {
+  if (src) {
+    return (
+      <figure className={`gen-image ${className}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt={prompt} className="block w-full" />
+        <figcaption>{model ? `Made with ${model}` : "Made with an image model"}</figcaption>
+      </figure>
+    );
+  }
   return (
     <figure className={`gen-image ${className}`}>
       <SampleImage prompt={prompt} />

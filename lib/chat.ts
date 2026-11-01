@@ -3,7 +3,7 @@ import type { ModeKey } from "@/lib/site";
 export type Message =
   | { id: string; role: "user"; text: string }
   | { id: string; role: "assistant"; kind: "text"; text: string; shown: number; model?: string; error?: boolean; onchain?: string }
-  | { id: string; role: "assistant"; kind: "image"; prompt: string; ready: boolean };
+  | { id: string; role: "assistant"; kind: "image"; prompt: string; ready: boolean; src?: string; model?: string; error?: string };
 
 export type Chat = { id: string; title: string; mode: ModeKey; messages: Message[] };
 

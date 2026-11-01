@@ -13,7 +13,7 @@ const FAQ: SplitItem[] = [
   {
     Icon: PiImageDuotone,
     q: "Can Horman make images and videos?",
-    a: "Not yet. Image, video and voice models are on the way. Until then, images in the chat are samples.",
+    a: "Images, yes: holders can create them right in the chat. They’re made by Google’s Gemini image model, so Google reads the prompt. Video and voice are next.",
   },
   {
     Icon: PiCpuDuotone,

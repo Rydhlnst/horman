@@ -4,13 +4,13 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GeneratedImage, IMAGE_INTENT, Markdown } from "@/components/chat/reply";
-import { ask } from "@/lib/ask";
+import { ask, createImage } from "@/lib/ask";
 import { ArrowUp, ImageIcon, Lightbulb, Map as MapIcon, MessageSquare, PanelLeft, PenLine, Plus, Ticket, X } from "lucide-react";
 import { HormanMark, Wordmark } from "@/components/logo";
 import { TopupSteps, TopupVoucher } from "@/components/topup-card";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
-import { HANDOFF, STORE, reducedMotion, uid, type Chat, type Message } from "@/lib/chat";
+import { HANDOFF, STORE, uid, type Chat, type Message } from "@/lib/chat";
 import { HOLD, MODEL_GROUPS, MODES, TICKER } from "@/lib/site";
 import { WalletButton } from "@/components/wallet/wallet-button";
 import { useWalletSession } from "@/components/wallet/wallet-session";
@@ -86,7 +86,8 @@ export function ChatApp() {
   // Holders-only models need a signed-in wallet that holds the token.
   const { session } = useWalletSession();
   const chosen = CHAT_MODELS.find((m) => m.name === tier);
-  const locked = tool === "chat" && !chosen?.free && !session?.holder;
+  const imageLocked = tool === "image" && !session?.holder;
+  const locked = (tool === "chat" && !chosen?.free && !session?.holder) || imageLocked;
   const active = chats.find((c) => c.id === activeId) ?? null;
   const messages = useMemo(() => active?.messages ?? [], [active]);
 
@@ -145,16 +146,11 @@ export function ChatApp() {
       list.map((c) => (c.id === chatId ? { ...c, messages: c.messages.map((m) => (m.id === msgId ? patch(m) : m)) } : c)),
     );
 
-  const later = (fn: () => void, ms: number) => {
-    timers.current.push(setTimeout(fn, ms));
-  };
-
   const send = (raw: string, forceImage = false) => {
     const text = raw.trim();
     // Holders-only models stay locked; image requests go through Auto.
     if (!text || busy || (locked && !forceImage)) return;
     const isImage = forceImage || tool === "image" || IMAGE_INTENT.test(text);
-    const reduce = reducedMotion();
 
     let chatId = activeId;
     const user: Message = { id: uid(), role: "user", text };
@@ -178,10 +174,10 @@ export function ChatApp() {
 
     const id = chatId;
     if (answer.role === "assistant" && answer.kind === "image") {
-      later(() => {
-        patchMessage(id, answerId, (m) => ({ ...m, ready: true }) as Message);
+      createImage(text).then(({ src, model, error }) => {
+        patchMessage(id, answerId, (m) => ({ ...m, ready: true, src, model, error }) as Message);
         setBusy(false);
-      }, reduce ? 50 : 1200);
+      });
       return;
     }
 
@@ -339,7 +335,7 @@ export function ChatApp() {
           <WalletButton />
         </div>
         <div className="bg-mist py-2 pl-[max(16px,env(safe-area-inset-left,0px))] pr-[max(16px,env(safe-area-inset-right,0px))] text-[13px] text-fg/75">
-          Live beta. Every model works in every mode. Open-weight models use providers that don’t keep or train on your data; GPT, Claude and Gemini are read by their host. Horman stores nothing. Images are still samples.
+          Live beta. Every model works in every mode. Open-weight models use providers that don’t keep or train on your data; GPT, Claude and Gemini are read by their host. Horman stores nothing. Holders can create images.
         </div>
 
         <div ref={scroller} className="min-h-0 flex-1 overflow-y-auto">
@@ -493,14 +489,27 @@ export function ChatApp() {
           </form>
           {locked && (
             <p className="mx-auto mt-2 flex max-w-[780px] flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[13px] text-muted" role="status">
-              {!session?.address
-                ? `${tier} is for holders: connect a wallet that holds ${HOLD} to pick it.`
-                : !session.ca
-                  ? `${tier} opens to holders when ${TICKER} launches.`
-                  : `${tier} is for holders: this wallet needs ${HOLD}.`}
-              <button type="button" className="font-semibold text-accent underline underline-offset-2" onClick={() => setTier("Auto")}>
-                Use Auto, free
+              {imageLocked
+                ? !session?.address
+                  ? `Image creation is for holders: connect a wallet that holds ${HOLD}.`
+                  : `Image creation is for holders: this wallet needs ${HOLD}.`
+                : !session?.address
+                  ? `${tier} is for holders: connect a wallet that holds ${HOLD} to pick it.`
+                  : !session.ca
+                    ? `${tier} opens to holders when ${TICKER} launches.`
+                    : `${tier} is for holders: this wallet needs ${HOLD}.`}
+              <button
+                type="button"
+                className="font-semibold text-accent underline underline-offset-2"
+                onClick={() => (imageLocked ? setTool("chat") : setTier("Auto"))}
+              >
+                {imageLocked ? "Back to chat, free" : "Use Auto, free"}
               </button>
+            </p>
+          )}
+          {tool === "image" && !locked && mode.key !== "open" && (
+            <p className="mx-auto mt-2 max-w-[780px] text-center text-[13px] text-muted" role="status">
+              Images are made by Google’s Gemini image model, so Google reads the prompt. Horman still stores nothing.
             </p>
           )}
           {tool === "chat" && !locked && mode.key !== "open" && chosen?.hosted && (
@@ -529,14 +538,8 @@ function Pending({ label }: { label: string }) {
 function AssistantBody({ message }: { message: Extract<Message, { role: "assistant" }> }) {
   if (message.kind === "image") {
     if (!message.ready) return <Pending label="Creating your image…" />;
-    return (
-      <>
-        <div className="flex flex-col gap-3">
-          <p>Image models aren’t switched on yet, so this one is a sample.</p>
-        </div>
-        <GeneratedImage prompt={message.prompt} className="mt-3 max-w-[460px]" />
-      </>
-    );
+    if (message.error) return <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{message.error}</p>;
+    return <GeneratedImage prompt={message.prompt} src={message.src} model={message.model} className="max-w-[460px]" />;
   }
   if (message.shown === 0 && !message.error) return <Pending label="Thinking…" />;
   if (message.error) return <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{message.text}</p>;

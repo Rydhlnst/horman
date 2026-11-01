@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CaButton } from "@/components/ca-button";
 import { GeneratedImage, IMAGE_INTENT, Markdown } from "@/components/chat/reply";
-import { ask } from "@/lib/ask";
+import { ask, createImage } from "@/lib/ask";
 import { HormanMark } from "@/components/logo";
 import { fadeUp, stagger } from "@/components/motion/reveal";
 import { SlidingTabs } from "@/components/watermelon/sliding-tabs";
@@ -124,10 +124,6 @@ export function Hero() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [chat]);
 
-  const later = (fn: () => void, ms: number) => {
-    timers.current.push(setTimeout(fn, ms));
-  };
-
   const patch = (msgId: string, fn: (m: Message) => Message) =>
     setChat((c) => (c ? { ...c, messages: c.messages.map((m) => (m.id === msgId ? fn(m) : m)) } : c));
 
@@ -135,7 +131,6 @@ export function Hero() {
     const text = raw.trim();
     if (!text || busy) return;
     const isImage = IMAGE_INTENT.test(text);
-    const still = reducedMotion();
     const user: Message = { id: uid(), role: "user", text };
     const answerId = uid();
     const answer: Message = isImage
@@ -151,13 +146,10 @@ export function Hero() {
     if (input.current) input.current.style.height = "";
 
     if (answer.kind === "image") {
-      later(
-        () => {
-          patch(answerId, (m) => ({ ...m, ready: true }) as Message);
-          setBusy(false);
-        },
-        still ? 50 : 1200,
-      );
+      createImage(text).then(({ src, model, error }) => {
+        patch(answerId, (m) => ({ ...m, ready: true, src, model, error }) as Message);
+        setBusy(false);
+      });
       return;
     }
     ask({
@@ -276,12 +268,13 @@ export function Hero() {
                           {m.model && !m.error && <ReceiptLine mode={chat.mode} />}
                         </>
                       ) : m.ready ? (
-                        <>
-                          <GeneratedImage prompt={m.prompt} className="max-w-[360px]" />
-                          <ReceiptLine mode={chat.mode} />
-                        </>
+                        m.error ? (
+                          <p className="rounded-[12px] bg-[#fdecea] px-3 py-2 text-[14px] text-[#a3362b]">{m.error}</p>
+                        ) : (
+                          <GeneratedImage prompt={m.prompt} src={m.src} model={m.model} className="max-w-[360px]" />
+                        )
                       ) : (
-                        <span className="image-wait">Drawing at 1024 × 1024…</span>
+                        <span className="image-wait">Creating your image…</span>
                       )}
                     </div>
                   </motion.div>

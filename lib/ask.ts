@@ -53,3 +53,15 @@ export async function ask({
   if (!text.trim()) return { text: "", model, error: "No answer came back. Try again." };
   return { text, model, onchain };
 }
+
+/** Asks /api/image for one picture. Holders only; the server says why when it refuses. */
+export async function createImage(prompt: string): Promise<{ src?: string; model?: string; error?: string }> {
+  try {
+    const res = await fetch("/api/image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) });
+    const data = (await res.json().catch(() => ({}))) as { image?: string; model?: string; error?: string };
+    if (!res.ok || !data.image) return { error: data.error ?? "No image came back. Try again." };
+    return { src: data.image, model: data.model };
+  } catch {
+    return { error: "Couldn’t reach Horman. Check your connection and try again." };
+  }
+}

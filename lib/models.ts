@@ -18,7 +18,7 @@ export const TIERS: Record<string, Tier> = {
   Gemini: { patterns: [/^google\/gemini-\d+(\.\d+)?-pro$/, /^google\/gemini-\d+(\.\d+)?-pro/, /^google\/gemini-\d+(\.\d+)?-flash$/], fallback: "google/gemini-2.5-pro" },
 };
 
-type Listed = { id: string; name?: string; created?: number };
+type Listed = { id: string; name?: string; created?: number; architecture?: { output_modalities?: string[] } };
 let cache: { at: number; models: Listed[] } | null = null;
 
 async function liveModels(): Promise<Listed[] | null> {
@@ -48,4 +48,19 @@ export async function resolveModel(tier: string): Promise<{ id: string; name: st
     }
   }
   return { id: t.fallback, name: t.fallback };
+}
+
+/**
+ * The image model: the newest one on OpenRouter that outputs images, preferring Google's
+ * Gemini image models, then any other image-output model.
+ */
+export async function resolveImageModel(): Promise<{ id: string; name: string }> {
+  const fallback = "google/gemini-2.5-flash-image-preview";
+  const models = await liveModels();
+  if (models) {
+    const images = models.filter((m) => m.architecture?.output_modalities?.includes("image")).sort((a, b) => (b.created ?? 0) - (a.created ?? 0));
+    const pick = images.find((m) => /^google\/gemini.*image/.test(m.id)) ?? images[0];
+    if (pick) return { id: pick.id, name: pick.name ?? pick.id };
+  }
+  return { id: fallback, name: "Google: Gemini image" };
 }
