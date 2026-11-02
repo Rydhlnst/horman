@@ -20,7 +20,7 @@ export type Scan = { owner: string; sol: number; rows: ScanRow[]; more: number; 
 type Owned = { value: { account: { data: { parsed?: { info?: { mint?: string; tokenAmount?: { uiAmount?: number } } } } } }[] };
 
 /** Names and prices from DexScreener, best effort: a scan never waits long or fails on it. */
-async function market(mints: string[]): Promise<Map<string, { name: string; symbol: string; price: number | null }>> {
+export async function market(mints: string[]): Promise<Map<string, { name: string; symbol: string; price: number | null }>> {
   const out = new Map<string, { name: string; symbol: string; price: number | null; liq: number }>();
   for (let i = 0; i < mints.length; i += 30) {
     try {

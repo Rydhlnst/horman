@@ -3,6 +3,7 @@ import { holding, SESSION_COOKIE, unseal } from "@/lib/auth";
 import { chargeCents, creditCents, MIN_CENTS, settle } from "@/lib/billing";
 import { resolveModel, TIERS } from "@/lib/models";
 import { findAddress, readOnchain } from "@/lib/solana";
+import { findSignature, readTx, txContext } from "@/lib/tx";
 import { MODEL_GROUPS, MODES, type ModeKey } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -84,13 +85,20 @@ export async function POST(req: NextRequest) {
   }
 
   // A full Solana address in the newest message: read it live so the answer uses real data.
-  const address = findAddress(messages[messages.length - 1].content);
-  const onchain = address ? await readOnchain(address) : null;
+  // A transaction signature wins over an address: read the transaction and tell its story.
+  const latest = messages[messages.length - 1].content;
+  const signature = findSignature(latest);
+  const address = signature ? null : findAddress(latest);
+  const story = signature ? await readTx(signature) : null;
+  const read = address ? await readOnchain(address) : null;
+  const onchain = story ? { kind: "transaction", context: txContext(story) } : read;
   const context = onchain
     ? [{ role: "system" as const, content: onchain.context }]
-    : address
-      ? [{ role: "system" as const, content: `The user pasted the Solana address ${address}, but the chain couldn't be read right now. Say so and don't guess any onchain facts.` }]
-      : [];
+    : signature
+      ? [{ role: "system" as const, content: `The user pasted the Solana transaction ${signature}, but it couldn't be found or the chain couldn't be read right now. Say so, suggest checking it's a mainnet signature, and don't guess what it did.` }]
+      : address
+        ? [{ role: "system" as const, content: `The user pasted the Solana address ${address}, but the chain couldn't be read right now. Say so and don't guess any onchain facts.` }]
+        : [];
 
   const picked = await resolveModel(tier);
   if (!picked) return json(400, "Unknown model.");

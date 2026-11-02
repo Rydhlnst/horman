@@ -1,13 +1,14 @@
 import Link from "next/link";
 
-/** Switches between the two free checks: one token, or a whole wallet. */
-export function CheckTabs({ active }: { active: "token" | "wallet" }) {
+/** Switches between the free checks: one token, a whole wallet, or one transaction. */
+export function CheckTabs({ active }: { active: "token" | "wallet" | "tx" }) {
   const tabs = [
     { key: "token", href: "/check", label: "Token check" },
     { key: "wallet", href: "/scan", label: "Wallet scan" },
+    { key: "tx", href: "/tx", label: "Transaction" },
   ] as const;
   return (
-    <nav aria-label="Checks" className="inline-flex gap-1 rounded-[14px] border border-line bg-surface p-1">
+    <nav aria-label="Checks" className="inline-flex max-w-full flex-wrap gap-1 rounded-[14px] border border-line bg-surface p-1">
       {tabs.map((t) => (
         <Link
           key={t.key}
